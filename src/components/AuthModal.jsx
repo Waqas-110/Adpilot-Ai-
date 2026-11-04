@@ -194,7 +194,7 @@ export default function AuthModal() {
           <p className="text-xs text-slate-500 mt-1">
             {mode === 'signin' && 'Sign in to access your autonomous Meta ad campaigns'}
             {mode === 'signup' && 'Create your account: Name, Business, Email & OTP'}
-            {mode === 'forgot' && 'Direct instant open or password reset'}
+            {mode === 'forgot' && 'Reset your account password'}
           </p>
         </div>
 
@@ -262,22 +262,6 @@ export default function AuthModal() {
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition-all"
                 />
               </div>
-              <p className="text-[10px] text-slate-500 mt-1 flex items-center justify-between">
-                <span>
-                  Admin Login:{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('admin@gmail.com')
-                      setPassword('123456')
-                    }}
-                    className="text-indigo-600 font-mono font-bold hover:underline cursor-pointer"
-                  >
-                    admin@gmail.com
-                  </button>
-                </span>
-                <span className="font-semibold text-emerald-600">Password: 123456</span>
-              </p>
             </div>
 
             <div className="space-y-2 pt-1">
