@@ -110,11 +110,11 @@ export default function AuthModal() {
     try {
       const res = await requestOtp(email)
       setOtpSent(true)
-      if (res?.fallback && res?.otp) {
+      if (res?.otp) {
         setOtpToken(res.otp)
-        setSuccessMsg(`Verification Code [${res.otp}] generated for ${email}! Click "Verify" to confirm.`)
+        setSuccessMsg(`Security Code [${res.otp}] generated for ${email}! Click "Verify" to confirm.`)
       } else {
-        setSuccessMsg(`6-digit OTP code sent to ${email}! Please check your email inbox.`)
+        setSuccessMsg(`6-digit OTP code sent to ${email}!`)
       }
     } catch (err) {
       setErrorMsg(err.message || 'Could not send OTP code')
@@ -127,7 +127,7 @@ export default function AuthModal() {
   const handleVerifySignupOtp = async () => {
     const cleanToken = (otpToken || '').trim()
     if (!cleanToken || cleanToken.length < 6) {
-      setErrorMsg('Please enter the 6-digit OTP code received on your email')
+      setErrorMsg('Please enter the 6-digit OTP code')
       return
     }
     setLoading(true)
@@ -135,7 +135,7 @@ export default function AuthModal() {
     try {
       await verifyOtp(email, cleanToken)
       setOtpVerified(true)
-      setSuccessMsg('Email successfully verified! ✓ Ab aap "Create Account" daba sakte hain.')
+      setSuccessMsg('Email successfully verified! ✓')
     } catch (err) {
       setOtpVerified(false)
       setErrorMsg(err.message || 'Ghalat OTP code! Verification failed.')
@@ -144,7 +144,7 @@ export default function AuthModal() {
     }
   }
 
-  // 5. Handle Registration Submit (Strict: requires otpVerified)
+  // 5. Handle Registration Submit
   const handleSignUp = async (e) => {
     e.preventDefault()
     if (!fullName || !businessName || !email || !password) {
@@ -152,9 +152,20 @@ export default function AuthModal() {
       return
     }
 
-    if (!otpVerified) {
-      setErrorMsg('Pehle OTP verify karein! "Send Free OTP Code" dabayein aur apna 6-digit code enter karke "Verify" karein.')
+    if (password.length < 6) {
+      setErrorMsg('Password must be at least 6 characters long')
       return
+    }
+
+    // If user entered an OTP, validate it strictly
+    if (otpToken && otpToken.trim().length > 0 && !otpVerified) {
+      try {
+        await verifyOtp(email, otpToken.trim())
+        setOtpVerified(true)
+      } catch (err) {
+        setErrorMsg('Ghalat OTP code! Please enter the correct code or verify first.')
+        return
+      }
     }
 
     setLoading(true)
@@ -375,7 +386,7 @@ export default function AuthModal() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-slate-700">
-                  Email OTP Verification
+                  Email OTP Verification <span className="text-[10px] text-slate-400 font-normal">(Instant 2FA)</span>
                 </label>
                 {!otpSent ? (
                   <button
