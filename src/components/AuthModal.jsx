@@ -80,22 +80,26 @@ export default function AuthModal() {
     }
   }
 
-  // Direct Instant Open (Bypass / Direct Login)
-  const handleDirectOpen = async (e) => {
-    if (e) e.preventDefault()
+  // 2. Handle Password Reset
+  const handleResetPassword = async (e) => {
+    e.preventDefault()
+    if (!email || !email.includes('@')) {
+      setErrorMsg('Please enter a valid email address')
+      return
+    }
     setLoading(true)
     setErrorMsg('')
     try {
-      await directUnlock(email || 'waqas@adpilot.ai')
-      setIsAuthModalOpen(false)
+      const res = await sendPasswordReset(email)
+      setSuccessMsg(res?.message || 'Password reset link sent to your email!')
     } catch (err) {
-      setErrorMsg('Direct open failed: ' + err.message)
+      setErrorMsg(err.message || 'Could not send reset instructions')
     } finally {
       setLoading(false)
     }
   }
 
-  // 2. Handle Send OTP for Signup Email Verification
+  // 3. Handle Send OTP for Signup Email Verification
   const handleSendSignupOtp = async () => {
     if (!email || !email.includes('@')) {
       setErrorMsg('Please enter a valid email address first')
@@ -106,7 +110,7 @@ export default function AuthModal() {
     try {
       const res = await requestOtp(email)
       setOtpSent(true)
-      setSuccessMsg(res?.sandboxOtp ? `OTP code sent to email! (Test Code: ${res.sandboxOtp})` : `OTP sent to ${email}!`)
+      setSuccessMsg(res?.sandboxOtp ? `OTP code sent! (Backup Test Code: ${res.sandboxOtp})` : `6-digit OTP code sent to ${email}!`)
     } catch (err) {
       setErrorMsg(err.message || 'Could not send OTP code')
     } finally {
@@ -114,26 +118,28 @@ export default function AuthModal() {
     }
   }
 
-  // 3. Handle Verify OTP
+  // 4. Handle Verify OTP
   const handleVerifySignupOtp = async () => {
-    if (!otpToken) {
-      setErrorMsg('Please enter the OTP code received on your email')
+    const cleanToken = (otpToken || '').trim()
+    if (!cleanToken || cleanToken.length < 6) {
+      setErrorMsg('Please enter the 6-digit OTP code received on your email')
       return
     }
     setLoading(true)
     setErrorMsg('')
     try {
-      await verifyOtp(email, otpToken)
+      await verifyOtp(email, cleanToken)
       setOtpVerified(true)
-      setSuccessMsg('Email successfully verified! ✓')
+      setSuccessMsg('Email successfully verified! ✓ Ab aap "Create Account" daba sakte hain.')
     } catch (err) {
-      setErrorMsg(err.message || 'Invalid OTP code')
+      setOtpVerified(false)
+      setErrorMsg(err.message || 'Ghalat OTP code! Verification failed.')
     } finally {
       setLoading(false)
     }
   }
 
-  // 4. Handle Registration Submit
+  // 5. Handle Registration Submit (Strict: requires otpVerified)
   const handleSignUp = async (e) => {
     e.preventDefault()
     if (!fullName || !businessName || !email || !password) {
@@ -141,18 +147,14 @@ export default function AuthModal() {
       return
     }
 
+    if (!otpVerified) {
+      setErrorMsg('Pehle OTP verify karein! "Send Free OTP Code" dabayein aur apna 6-digit code enter karke "Verify" karein.')
+      return
+    }
+
     setLoading(true)
     setErrorMsg('')
     try {
-      if (!otpVerified) {
-        const tokenToVerify = otpToken || '123456'
-        try {
-          await verifyOtp(email, tokenToVerify)
-          setOtpVerified(true)
-        } catch (otpErr) {
-          console.warn('Auto OTP verify fallback:', otpErr)
-        }
-      }
       await signupWithPassword(email, password, { fullName, businessName })
       setIsAuthModalOpen(false)
     } catch (err) {
@@ -234,12 +236,14 @@ export default function AuthModal() {
                 </label>
                 <button
                   type="button"
-                  onClick={handleDirectOpen}
-                  className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors"
-                  title="Direct open without password"
+                  onClick={() => {
+                    setMode('forgot')
+                    setErrorMsg('')
+                    setSuccessMsg('')
+                  }}
+                  className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
                 >
-                  <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
-                  <span>Direct Open (Instant)</span>
+                  Forgot Password?
                 </button>
               </div>
               <div className="relative">
@@ -285,17 +289,6 @@ export default function AuthModal() {
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </button>
-
-              {/* Direct Open Button as requested */}
-              <button
-                type="button"
-                onClick={handleDirectOpen}
-                disabled={loading}
-                className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 font-bold text-xs text-slate-700 flex items-center justify-center gap-2 transition-all cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                <span>Instant Direct Open (No Password Needed)</span>
               </button>
             </div>
 
@@ -469,38 +462,38 @@ export default function AuthModal() {
         )}
 
         {/* ================================================================== */}
-        {/* MODE 3: DIRECT OPEN / FORGOT PASSWORD */}
+        {/* MODE 3: FORGOT PASSWORD */}
         {/* ================================================================== */}
         {mode === 'forgot' && (
-          <div className="space-y-4">
+          <form onSubmit={handleResetPassword} className="space-y-4">
             <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 space-y-1">
-              <span className="font-bold block">🚀 Instant Direct Open:</span>
-              <p className="text-slate-600">Kisi bhi email ya verification ke baghair direct dashboard open karne ke liye neeche button dabayein.</p>
+              <span className="font-bold block">🔑 Reset Your Password:</span>
+              <p className="text-slate-600">Enter your registered email address and we will send you password reset instructions.</p>
             </div>
 
             <div>
               <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Your Email (Optional)
+                Your Email Address
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com (or leave empty)"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 outline-none focus:bg-white focus:border-indigo-600"
+                  placeholder="name@company.com"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 outline-none focus:bg-white focus:border-indigo-600"
                 />
               </div>
             </div>
 
             <button
-              type="button"
-              onClick={handleDirectOpen}
+              type="submit"
               disabled={loading}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 font-bold text-xs sm:text-sm text-white flex items-center justify-center gap-2 shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Open Directly Now (Direct Login ➔)</span>}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Send Reset Instructions ➔</span>}
             </button>
 
             <div className="pt-3 text-center border-t border-slate-200 text-xs text-slate-500">
@@ -516,7 +509,7 @@ export default function AuthModal() {
                 Back to Sign In
               </button>
             </div>
-          </div>
+          </form>
         )}
 
       </div>

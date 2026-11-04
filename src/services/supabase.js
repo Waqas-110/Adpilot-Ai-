@@ -59,104 +59,120 @@ export async function signInWithGoogle() {
  * Send Free OTP verification email
  */
 export async function sendOtpEmail(email) {
+  const cleanEmail = (email || '').toLowerCase().trim()
+  const randomOtp = Math.floor(100000 + Math.random() * 900000).toString()
+
+  let dispatchedViaSupabase = false
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase.auth.signInWithOtp({
-        email,
+        email: cleanEmail,
         options: {
-          shouldCreateUser: true
+          shouldCreateUser: true,
+          emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined
         }
       })
-      if (!error && data) {
-        return data
+      if (!error) {
+        dispatchedViaSupabase = true
+        sessionStorage.removeItem('adpilot_active_otp_' + cleanEmail)
+      } else {
+        console.warn('Supabase signInWithOtp failed:', error.message)
       }
-      console.warn('Supabase signInWithOtp failed, falling back to sandbox OTP:', error?.message)
     } catch (err) {
-      console.warn('Supabase signInWithOtp exception, falling back to sandbox OTP:', err.message)
+      console.warn('Supabase signInWithOtp exception:', err.message)
     }
   }
 
-  // Guaranteed Sandbox OTP dispatch (never blocks or throws "Invalid API key")
+  // Artificial realistic network delay
   await new Promise((r) => setTimeout(r, 400))
-  const simulatedOtp = '123456'
-  sessionStorage.setItem('adpilot_simulated_otp_' + email, simulatedOtp)
-  return { 
-    message: 'OTP sent successfully! (Sandbox Test Code: 123456)',
-    sandboxOtp: simulatedOtp
+  if (dispatchedViaSupabase) {
+    return { 
+      success: true,
+      message: `6-digit OTP code sent to ${cleanEmail}! Please check your Gmail.`
+    }
+  } else {
+    // If Supabase was rate-limited or unavailable, record temporary active OTP
+    sessionStorage.setItem('adpilot_active_otp_' + cleanEmail, randomOtp)
+    return { 
+      success: true,
+      message: `OTP code sent! (Backup Test Code: ${randomOtp})`,
+      sandboxOtp: randomOtp
+    }
   }
 }
 
 /**
- * Verify OTP entered by the user
+ * Verify OTP entered by the user - STRICT VALIDATION (Never allows wrong OTP!)
  */
 export async function verifyOtpToken(email, token) {
+  const cleanEmail = (email || '').toLowerCase().trim()
   const cleanToken = (token || '').trim()
-  const expected = sessionStorage.getItem('adpilot_simulated_otp_' + email) || '123456'
 
-  // Instant sandbox validation (Code: 123456 is always accepted)
-  if (cleanToken === '123456' || cleanToken === expected) {
+  if (!cleanToken || cleanToken.length < 6) {
+    throw new Error('Ghalat OTP! Please enter a valid 6-digit numeric OTP code.')
+  }
+
+  // 1. Check against active fallback session OTP (only valid if Supabase email dispatch was bypassed/offline)
+  const storedOtp = sessionStorage.getItem('adpilot_active_otp_' + cleanEmail)
+  if (storedOtp && cleanToken === storedOtp) {
     const mockUser = {
       id: 'otp-user-' + Math.random().toString(36).substring(2, 9),
-      email: email,
+      email: cleanEmail,
       user_metadata: {
-        full_name: email.split('@')[0],
-        avatar_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${email}`,
+        full_name: cleanEmail.split('@')[0],
+        avatar_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${cleanEmail}`,
         business_name: 'Verified Business'
       },
       provider: 'email_otp'
     }
     localStorage.setItem('adpilot_session', JSON.stringify(mockUser))
-    return { user: mockUser }
+    return { success: true, user: mockUser }
   }
 
+  // 2. Try Supabase verification with the real token sent to their Gmail
   if (isSupabaseConfigured && supabase) {
-    // 1. Try verify with type: 'signup' (Token sent during account creation)
+    // Try email token (from signInWithOtp)
     try {
       const res = await supabase.auth.verifyOtp({
-        email,
-        token: cleanToken,
-        type: 'signup'
-      })
-      if (!res.error && res.data?.user) {
-        localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
-        return res.data
-      }
-    } catch (err) {
-      console.warn('verifyOtp signup type exception:', err.message)
-    }
-
-    // 2. Try verify with type: 'email' (Token sent via signInWithOtp)
-    try {
-      const res = await supabase.auth.verifyOtp({
-        email,
+        email: cleanEmail,
         token: cleanToken,
         type: 'email'
       })
       if (!res.error && res.data?.user) {
         localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
-        return res.data
+        return { success: true, user: res.data.user }
       }
-    } catch (err) {
-      console.warn('verifyOtp email type exception:', err.message)
-    }
+    } catch (err) {}
 
-    // 3. Try verify with type: 'magiclink'
+    // Try signup token
     try {
       const res = await supabase.auth.verifyOtp({
-        email,
+        email: cleanEmail,
+        token: cleanToken,
+        type: 'signup'
+      })
+      if (!res.error && res.data?.user) {
+        localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
+        return { success: true, user: res.data.user }
+      }
+    } catch (err) {}
+
+    // Try magiclink token
+    try {
+      const res = await supabase.auth.verifyOtp({
+        email: cleanEmail,
         token: cleanToken,
         type: 'magiclink'
       })
       if (!res.error && res.data?.user) {
         localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
-        return res.data
+        return { success: true, user: res.data.user }
       }
-    } catch (err) {
-      console.warn('verifyOtp magiclink type exception:', err.message)
-    }
+    } catch (err) {}
   }
 
-  throw new Error('Ghalat OTP code! Apne email mein aaya hua 6-digit code enter karein ya 123456 enter karein.')
+  // STRICT REJECTION: If code did not match, throw error!
+  throw new Error('Ghalat OTP code! Aapka daala gaya 6-digit code galat hai ya expire ho gaya hai.')
 }
 
 /**
@@ -164,18 +180,17 @@ export async function verifyOtpToken(email, token) {
  */
 export async function signInWithEmailPassword(email, password) {
   const cleanEmail = email.toLowerCase().trim()
-  const isAdminEmail = cleanEmail === 'admin@gmail.com' || cleanEmail.includes('admin')
+  const isAdminEmail = cleanEmail === 'admin@gmail.com'
 
-  // 1. Direct Master Admin Verification (Email: admin@gmail.com / Password: 123456)
+  // 1. Direct Master Admin Verification (Email: admin@gmail.com / Password strictly: 123456)
   if (isAdminEmail) {
-    const validAdminPasswords = ['123456', 'admin123', 'admin', 'adpilot2026']
-    if (!validAdminPasswords.includes(password.trim())) {
+    if (password.trim() !== '123456') {
       throw new Error('Ghalat Admin Password! Admin ke access ke liye password "123456" enter karein.')
     }
 
     const adminUser = {
       id: 'admin_master_waqas',
-      email: cleanEmail === 'admin@gmail.com' ? 'admin@gmail.com' : cleanEmail,
+      email: 'admin@gmail.com',
       user_metadata: {
         full_name: 'Waqas Anwar (Master Admin)',
         avatar_url: 'https://api.dicebear.com/7.x/identicon/svg?seed=admin_master',
@@ -196,7 +211,6 @@ export async function signInWithEmailPassword(email, password) {
         password
       })
       if (error) {
-        // If Supabase rejected the password, throw the real error!
         throw new Error(error.message || 'Ghalat Email ya Password! Please check your credentials.')
       }
       if (data?.user) {
@@ -204,41 +218,31 @@ export async function signInWithEmailPassword(email, password) {
         return data
       }
     } catch (err) {
-      // If error is invalid credentials, rethrow to block login
       if (err.message && (err.message.includes('Invalid login') || err.message.includes('Ghalat') || err.message.includes('credentials'))) {
         throw err
       }
-      console.warn('Supabase signin error, checking sandbox credentials:', err)
+      console.warn('Supabase signin error, checking local credentials:', err)
     }
   }
 
-  // 3. Regular Sandbox User verification
+  // 3. Strict Local User verification (NEVER auto-create on Sign In!)
   const usersDb = JSON.parse(localStorage.getItem('adpilot_users_db') || '{}')
   if (usersDb[cleanEmail]) {
     if (usersDb[cleanEmail].password !== password) {
       throw new Error('Ghalat Password! Aapka daala gaya password match nahi kar raha.')
     }
   } else {
-    // User must provide at least 6-char password
-    if (!password || password.length < 6) {
-      throw new Error('Ghalat Password! Password kam az kam 6 characters ka hona chahiye.')
-    }
-    // Save newly authenticated test user
-    usersDb[cleanEmail] = {
-      password,
-      fullName: email.split('@')[0],
-      businessName: 'AdPilot Brand'
-    }
-    localStorage.setItem('adpilot_users_db', JSON.stringify(usersDb))
+    // DO NOT auto-create account on sign in! Throw error!
+    throw new Error('Account nahi mila! Pehle "Sign Up" par click karke account create karein.')
   }
 
   const mockUser = {
     id: 'user_' + Math.random().toString(36).substring(2, 9),
     email: cleanEmail,
     user_metadata: {
-      full_name: cleanEmail.split('@')[0],
+      full_name: usersDb[cleanEmail]?.fullName || cleanEmail.split('@')[0],
       avatar_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${cleanEmail}`,
-      business_name: 'AdPilot Store PK',
+      business_name: usersDb[cleanEmail]?.businessName || 'AdPilot Store PK',
       role: 'user'
     },
     provider: 'password'
