@@ -44,17 +44,101 @@ export async function generateCampaignStrategy({
   const combined = `${businessName || ''} ${industry || ''} ${niche || ''} ${productDesc || ''}`.toLowerCase()
   const aud = `${targetAudience || ''}`.toLowerCase()
 
-  const isGame = combined.includes('game') || combined.includes('gaming') || combined.includes('gamer') || 
-                 combined.includes('rpg') || combined.includes('fps') || combined.includes('arcade') || 
-                 combined.includes('playstore') || combined.includes('steam') || combined.includes('unity') || 
-                 combined.includes('unreal') || combined.includes('puzzle')
+  const isGame = /\b(game|gaming|gamer|rpg|fps|arcade|playstore|steam|unity|unreal|puzzle)\b/i.test(combined)
+  const isAppOrDigital = !isGame && /\b(software|saas|mobile app|web app|digital tool|subscription|crm)\b/i.test(combined)
+  const isUae = /\b(uae|dubai|sharjah|abu dhabi|ajman|aed|dirham|emirates)\b/i.test(aud) || /\b(uae|dubai|sharjah|abu dhabi|aed)\b/i.test(combined)
+  const isService = /\b(landscaping|garden|pool|swimming|interior|decor|cleaning|salon|clinic|repair|construction|plumbing|electrician|catering|hvac)\b/i.test(combined)
+  const isGlobal = isUae || /\b(world|global|international|usa|uk|america|britain|europe|canada|australia|tier 1|tier-1)\b/i.test(aud)
 
-  const isAppOrDigital = isGame || combined.includes('app') || combined.includes('software') || 
-                         combined.includes('saas') || combined.includes('tool') || combined.includes('download') || 
-                         combined.includes('digital') || combined.includes('course')
-
-  const isGlobal = aud.includes('world') || aud.includes('global') || aud.includes('international') || 
-                   aud.includes('usa') || aud.includes('us') || aud.includes('uk') || aud.includes('all')
+  // --------------------------------------------------------------------------
+  // PROFILE: HOME / LUXURY / LOCAL SERVICE (e.g. Landscaping & Pools)
+  // --------------------------------------------------------------------------
+  if (isService) {
+    const serviceName = productDesc ? productDesc.split('|')[0].trim() : 'Luxury Landscaping & Pools'
+    return {
+      viralKeywords: [
+        'Dubai Luxury Pools',
+        'UAE Garden Landscaping',
+        'Villa Pool Renovation',
+        'Modern Outdoor Living',
+        'Custom Swimming Pools',
+        'Private Oasis Design',
+        'Smart Garden Irrigation',
+        'Premium Landscape Architecture'
+      ],
+      trendingHashtags: [
+        '#DubaiLandscaping',
+        '#UAEPools',
+        '#LuxuryLivingDubai',
+        '#VillaMakeover',
+        '#OutdoorLiving',
+        '#GardenDesign',
+        '#PoolsideParadise',
+        '#CustomPools'
+      ],
+      adCopies: [
+        {
+          id: 'copy_1',
+          angle: 'Luxury Outdoor Living',
+          hook: '🏡 Transform your backyard into a breathtaking 5-star resort paradise.',
+          headline: `Custom ${serviceName} | Designed for UAE Luxury Living`,
+          primaryText: `Ready to elevate your villa? From bespoke swimming pools to lush modern garden sanctuaries, our team delivers mastercrafted outdoor living spaces with guaranteed durability.`,
+          callToAction: 'Book Free Consultation',
+          badge: '⭐ Premium Certified'
+        },
+        {
+          id: 'copy_2',
+          angle: 'Turnkey Design & 3D Visualization',
+          hook: 'See your dream pool & garden in 3D before we even break ground!',
+          headline: `Expert ${serviceName} — Turnkey Design & Build`,
+          primaryText: `We handle everything from architectural permits to 3D visualization, masonry, and smart pool filtration. Trusted by hundreds of homeowners across the UAE.`,
+          callToAction: 'Get Instant 3D Quote',
+          badge: '🔥 High-Demand Service'
+        },
+        {
+          id: 'copy_3',
+          angle: 'Exclusive Seasonal Booking Offer',
+          hook: 'Limited slots available this month for custom pool & landscaping builds.',
+          headline: `Upgrade Your Villa with ${serviceName}`,
+          primaryText: `Experience outdoor luxury all year round. Schedule your private site inspection today and receive a complimentary 3D landscape design concept.`,
+          callToAction: 'Inquire on WhatsApp',
+          badge: '⚡ VIP Inquiries'
+        }
+      ],
+      recommendedAdSets: [
+        {
+          id: 'adset_1',
+          name: 'UAE Villa & Luxury Homeowners (Dubai & Abu Dhabi)',
+          locations: 'Dubai (Palm Jumeirah, Emirates Hills, Arabian Ranches, Jumeirah Islands) & Abu Dhabi',
+          audience: 'High-Net-Worth Individuals, Villa Owners, Real Estate Investors',
+          budgetSplit: 40,
+          selected: true,
+          placementType: 'Meta Feed & Story (1:1)'
+        },
+        {
+          id: 'adset_2',
+          name: 'Home Renovation & Landscape Architecture Enthusiasts',
+          locations: 'UAE High-End Communities',
+          audience: 'Interests: Landscape Architecture, Swimming Pool, Luxury Homes, Outdoor Living',
+          budgetSplit: 35,
+          selected: true,
+          placementType: 'Instagram Reels (9:16)'
+        },
+        {
+          id: 'adset_3',
+          name: 'Advantage+ High-Intent Inquiries',
+          locations: 'United Arab Emirates',
+          audience: 'Algorithmic targeting optimizing for WhatsApp messages and lead forms',
+          budgetSplit: 25,
+          selected: true,
+          placementType: 'Broad AI Discovery'
+        }
+      ],
+      recommendedBudget: 15000,
+      projectedRoas: '6.2x - 8.5x (High-Ticket Leads)',
+      engineUsed: 'AdPilot Smart Creative Engine (Luxury Services Profile)'
+    }
+  }
 
   if (isGame) {
     return {

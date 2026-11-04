@@ -3,15 +3,15 @@ import { useCampaign } from '../context/CampaignContext'
 import { verifySafepayPayment, createSafepayCheckoutSession, formatPKR } from '../services/safepay'
 import { deployCampaignToMeta } from '../services/meta'
 import confetti from 'canvas-confetti'
-import { 
-  X, 
-  ShieldCheck, 
-  CreditCard, 
-  CheckCircle2, 
-  Loader2, 
-  Lock, 
-  ArrowRight, 
-  Sparkles, 
+import {
+  X,
+  ShieldCheck,
+  CreditCard,
+  CheckCircle2,
+  Loader2,
+  Lock,
+  ArrowRight,
+  Sparkles,
   Receipt,
   Download,
   AlertCircle,
@@ -156,7 +156,7 @@ export default function SafepayCheckoutModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md">
-      <div 
+      <div
         className="relative w-full max-w-xl rounded-2xl glass-panel p-6 sm:p-8 border border-slate-700 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >

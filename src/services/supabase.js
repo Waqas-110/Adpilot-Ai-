@@ -4,8 +4,8 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://rqqjpusuubbfji
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxcWpwdXN1dWJiZmppamd3dWh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzODc5MTUsImV4cCI6MjEwODk2MzkxNX0.xEQ-H339fXkt1uCPSXunIDZxPnoRdmhpEK9cISNuP3o'
 
 export const isSupabaseConfigured = Boolean(
-  supabaseUrl && 
-  supabaseAnonKey && 
+  supabaseUrl &&
+  supabaseAnonKey &&
   supabaseUrl !== 'https://your-project.supabase.co' &&
   !supabaseAnonKey.includes('...') &&
   supabaseAnonKey.length > 50
@@ -86,7 +86,7 @@ export async function sendOtpEmail(email) {
   // Artificial realistic network delay
   await new Promise((r) => setTimeout(r, 400))
   if (dispatchedViaSupabase) {
-    return { 
+    return {
       success: true,
       fallback: false,
       message: `6-digit OTP code sent to ${cleanEmail}! Please check your Gmail.`
@@ -95,7 +95,7 @@ export async function sendOtpEmail(email) {
     // If Supabase was rate-limited or unavailable, record active OTP for this session
     sessionStorage.setItem('adpilot_active_otp_' + cleanEmail, randomOtp)
     console.log('[AdPilot Security] Verification code generated for', cleanEmail, ':', randomOtp)
-    return { 
+    return {
       success: true,
       otp: randomOtp,
       fallback: true,
@@ -145,7 +145,7 @@ export async function verifyOtpToken(email, token) {
         localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
         return { success: true, user: res.data.user }
       }
-    } catch (err) {}
+    } catch (err) { }
 
     // Try signup token
     try {
@@ -158,7 +158,7 @@ export async function verifyOtpToken(email, token) {
         localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
         return { success: true, user: res.data.user }
       }
-    } catch (err) {}
+    } catch (err) { }
 
     // Try magiclink token
     try {
@@ -171,7 +171,7 @@ export async function verifyOtpToken(email, token) {
         localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
         return { success: true, user: res.data.user }
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   // STRICT REJECTION: If code did not match, throw error!

@@ -273,7 +273,7 @@ export default function Dashboard() {
 
           {/* Main Chart Card (Meta Ads Performance & Sales Revenue) */}
           <div className="lg:col-span-2 p-6 rounded-2xl glass-card border border-slate-800 space-y-5">
-            
+
             {/* Header & Metric Explanations */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
               <div>
@@ -338,32 +338,30 @@ export default function Dashboard() {
                   const isSelected = selectedDayIdx === idx
 
                   return (
-                    <div 
+                    <div
                       key={idx}
                       onClick={() => setSelectedDayIdx(idx)}
-                      className={`group flex flex-col items-center cursor-pointer transition-all ${
-                        isSelected ? 'scale-105' : 'opacity-80 hover:opacity-100'
-                      }`}
+                      className={`group flex flex-col items-center cursor-pointer transition-all ${isSelected ? 'scale-105' : 'opacity-80 hover:opacity-100'
+                        }`}
                     >
                       {/* ROAS Badge */}
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full mb-1 transition-all ${
-                        isSelected 
-                          ? 'bg-emerald-500 text-slate-950 shadow-md font-mono' 
-                          : 'bg-slate-800 text-emerald-400'
-                      }`}>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full mb-1 transition-all ${isSelected
+                        ? 'bg-emerald-500 text-slate-950 shadow-md font-mono'
+                        : 'bg-slate-800 text-emerald-400'
+                        }`}>
                         {item.roas}
                       </span>
 
                       {/* Bar Pair (Revenue + Spend) */}
                       <div className="w-full flex items-end justify-center gap-1 h-36 bg-slate-900/40 rounded-xl p-1 relative border border-slate-800/60 group-hover:border-indigo-500/50">
                         {/* Spend Bar (Purple) */}
-                        <div 
+                        <div
                           style={{ height: `${spendHeightPercent}%` }}
                           className="w-1/2 bg-indigo-600 rounded-t-md transition-all group-hover:bg-indigo-500"
                           title={`Ad Spend: ${formatPKR(item.spend)}`}
                         />
                         {/* Revenue Bar (Green) */}
-                        <div 
+                        <div
                           style={{ height: `${revHeightPercent}%` }}
                           className="w-1/2 bg-emerald-500 rounded-t-md transition-all group-hover:bg-emerald-400 shadow-md shadow-emerald-500/20"
                           title={`Revenue: ${formatPKR(item.revenue)}`}
@@ -371,9 +369,8 @@ export default function Dashboard() {
                       </div>
 
                       {/* Date Label */}
-                      <span className={`text-[10px] mt-2 font-mono font-bold truncate max-w-full ${
-                        isSelected ? 'text-indigo-300 underline underline-offset-4' : 'text-slate-400'
-                      }`}>
+                      <span className={`text-[10px] mt-2 font-mono font-bold truncate max-w-full ${isSelected ? 'text-indigo-300 underline underline-offset-4' : 'text-slate-400'
+                        }`}>
                         {item.short}
                       </span>
                     </div>

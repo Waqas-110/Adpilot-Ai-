@@ -73,10 +73,10 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
 
   // Store profile
   const [storeName, setStoreName] = useState(user?.user_metadata?.business_name || 'My Business')
-  const [storeNiche, setStoreNiche] = useState('E-Commerce & Digital')
-  const [heroProduct, setHeroProduct] = useState('Hero Product (e.g. Mobile Game, Apparel, Skincare)')
+  const [storeNiche, setStoreNiche] = useState('Home Services & Retail')
+  const [heroProduct, setHeroProduct] = useState('')
   const [storeWebsite, setStoreWebsite] = useState('https://mybusiness.com')
-  const [specialOffer, setSpecialOffer] = useState('Special Discount + Fast Delivery')
+  const [specialOffer, setSpecialOffer] = useState('Free Quote & Site Inspection')
 
   // --------------------------------------------------------------------------
   // STEP 2: CONVERSATIONAL AI CHAT (GROQ LLM)
@@ -91,7 +91,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
     {
       id: 'ai_2',
       sender: 'ai',
-      text: `Chalein shuru karte hain:\n\n📌 **Step 1 (Product & Price/USP):**\nAapka main hero product, mobile game ya service kya hai? Aur iski price ya koi khaas faida (USP) kya hai jo log isay use ya buy karein? (Jaise: Mobile Game, Fashion Apparel, Skincare, ya Digital App)`
+      text: `Chalein shuru karte hain:\n\n📌 **Step 1 (Product & Service):**\nAapka main hero product ya service kya hai? Aur iski price ya koi khaas faida (USP) kya hai jo log isay choose karein? (Jaise: Swimming Pools & Landscaping, Fashion Apparel, ya Professional Services)`
     }
   ])
   const [chatInput, setChatInput] = useState('')
@@ -326,36 +326,30 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
     setIsAiTyping(true)
     setAiGeneratingStatus(`Groq LLM is analyzing your business details & generating custom Viral Keywords, 5 Ad Angles & 4 AdSets for ${storeName}...`)
 
-    const rawProduct = overrideParams.heroProduct || heroProduct || 'Summer Denim Jackets & Casual Apparel'
-    const rawAudience = overrideParams.targetAudienceText || targetAudienceText || 'Karachi, Lahore, Islamabad (Age 18-35) • Online Shoppers & COD'
-    const budget = overrideParams.selectedBudget || selectedBudget || 50000
-    const rawOffer = overrideParams.specialOffer || specialOffer || 'Free Delivery Across Pakistan + Cash on Delivery'
+    const rawProduct = overrideParams.heroProduct || heroProduct || 'Premium Services & Products'
+    const rawAudience = overrideParams.targetAudienceText || targetAudienceText || 'Target Audience & Prospective Clients'
+    const budget = overrideParams.selectedBudget || selectedBudget || 15000
+    const rawOffer = overrideParams.specialOffer || specialOffer || 'High Quality Service & Free Consultation'
 
-    // Detect campaign profile
+    // Detect campaign profile using regex boundaries
     const combinedContext = `${storeName} ${storeNiche} ${rawProduct} ${rawAudience} ${rawOffer}`.toLowerCase()
-    const isGame = combinedContext.includes('game') || combinedContext.includes('gaming') || combinedContext.includes('rpg') || combinedContext.includes('play store') || combinedContext.includes('app store') || combinedContext.includes('gamer')
-    const isAppOrDigital = isGame || combinedContext.includes('app') || combinedContext.includes('software') || combinedContext.includes('saas') || combinedContext.includes('digital')
-    const isGlobal = combinedContext.includes('world') || combinedContext.includes('global') || combinedContext.includes('international') || combinedContext.includes('usa') || combinedContext.includes('uk') || combinedContext.includes('worldwide')
+    const isGame = /\b(game|gaming|gamer|rpg|fps|arcade)\b/i.test(combinedContext)
+    const isAppOrDigital = !isGame && /\b(software|saas|mobile app|web app|crm|subscription)\b/i.test(combinedContext)
+    const isUae = /\b(uae|dubai|sharjah|abu dhabi|ajman|aed|emirates)\b/i.test(combinedContext)
+    const isService = /\b(landscaping|garden|pool|swimming|interior|decor|cleaning|salon|clinic|repair|construction)\b/i.test(combinedContext)
+    const isGlobal = isUae || /\b(world|global|international|usa|uk|america|britain|europe|canada|australia)\b/i.test(rawAudience.toLowerCase())
 
-    // Clean resolved values for non-COD / gaming / digital / global profiles
     let product = rawProduct
-    if (isGame && (product.includes('Summer Denim') || product.includes('Jackets'))) {
-      product = 'Action RPG Mobile Game (iOS & Android)'
-    }
     let audience = rawAudience
-    if ((isGame || isGlobal) && (audience.includes('Karachi') || audience.includes('COD'))) {
-      audience = isGame ? 'Worldwide Gamers (iOS & Android) • English Speaking Tier 1 & Global' : 'Global Audience (USA, UK, Canada, Australia) • International Buyers'
-    }
     let offer = rawOffer
-    if (isGame && (offer.includes('Cash on Delivery') || offer.includes('Across Pakistan') || offer.includes('COD'))) {
-      offer = 'Free to Play + Claim 5,000 Free Gems Starter Pack'
-    } else if (isGlobal && (offer.includes('Cash on Delivery') || offer.includes('Across Pakistan') || offer.includes('COD'))) {
-      offer = 'Worldwide Express Shipping + 30-Day Money Back Guarantee'
-    }
 
     const adGoal = isGame
-      ? 'Mobile App Installs & Global Player Acquisition'
-      : (isAppOrDigital ? 'App Installs & Free Trial Signups' : (isGlobal ? 'Global E-Commerce Conversions & High ROAS' : 'E-commerce Conversions & ROAS'))
+      ? 'Mobile App Installs & Player Acquisition'
+      : (isAppOrDigital 
+          ? 'Software Trials & Signups'
+          : (isService 
+              ? 'High-Value Client Inquiries & Bookings'
+              : (isGlobal ? 'Global Conversions & High ROAS' : 'Conversions & Sales')))
 
     try {
       const strategyRes = await generateCampaignStrategy({
@@ -519,14 +513,15 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
       } else if (interviewStage === 1) {
         // Step 2: User answered Target Audience
         const audLower = textToSend.toLowerCase()
-        const isGlobalTarget = audLower.includes('usa') || audLower.includes('uk') || 
-                               audLower.includes('world') || audLower.includes('global') || 
-                               audLower.includes('international') || audLower.includes('us') || 
-                               audLower.includes('america') || audLower.includes('britain')
+        const isUae = /\b(uae|dubai|sharjah|abu dhabi|ajman|emirates)\b/i.test(audLower)
+        const isGlobalTarget = isUae || /\b(usa|uk|world|global|international|america|britain|canada|australia)\b/i.test(audLower)
 
         let resolvedAud = textToSend
         let resolvedName = storeName
-        if (isGlobalTarget) {
+        if (isUae) {
+          resolvedAud = 'UAE (Dubai, Abu Dhabi, Sharjah) • Villa & Property Owners'
+          setSpecialOffer('Free On-Site Inspection & 3D Landscape Concept')
+        } else if (isGlobalTarget) {
           resolvedAud = 'USA & UK (Tier 1 International Buyers)'
           if (storeName === 'Karachi Threads' || storeName === 'My Business') {
             resolvedName = user?.user_metadata?.business_name || 'Global Brand'
@@ -553,14 +548,18 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
           .replace(/Aapke\s+business\s+ka\s+naam\s+kya\s+hai\??/gi, '')
           .trim()
         if (!cleanReply || cleanReply.includes('Karachi Threads')) {
-          cleanReply = isGlobalTarget
-            ? `Zabardast! Target market note kar li hai: USA, UK aur Tier-1 International buyers.`
-            : `Zabardast! Target audience note kar li hai.`
+          cleanReply = isUae
+            ? `Zabardast! UAE market note kar li hai: Dubai, Abu Dhabi aur luxury villa communities.`
+            : (isGlobalTarget
+                ? `Zabardast! Target market note kar li hai: USA, UK aur Tier-1 International buyers.`
+                : `Zabardast! Target audience note kar li hai.`)
         }
 
-        const step3Text = isGlobalTarget
-          ? `${cleanReply}\n\n💰 **Step 3 (Monthly Ad Budget & Goal):**\nAapka monthly Meta ad budget kitna hai aur main objective kya hai? (e.g. $500 - $1,500 USD ya Rs. 35,000 to Rs. 75,000 PKR, Direct Sales ya App Installs?)`
-          : `${cleanReply}\n\n💰 **Step 3 (Monthly Ad Budget & Goal):**\nAapka monthly Meta ad budget kitna hai aur main objective kya hai? (e.g. Rs. 35,000 to Rs. 75,000 PKR, App Downloads, ya Direct Sales?)`
+        const step3Text = isUae
+          ? `${cleanReply}\n\n💰 **Step 3 (Monthly Ad Budget & Goal):**\nAapka monthly Meta ad budget kitna hai aur main objective kya hai? (e.g. 5,000 - 15,000 AED, High-Ticket Leads ya Inquiries?)`
+          : (isGlobalTarget
+              ? `${cleanReply}\n\n💰 **Step 3 (Monthly Ad Budget & Goal):**\nAapka monthly Meta ad budget kitna hai aur main objective kya hai? (e.g. $500 - $1,500 USD ya Client Leads?)`
+              : `${cleanReply}\n\n💰 **Step 3 (Monthly Ad Budget & Goal):**\nAapka monthly Meta ad budget kitna hai aur main objective kya hai? (e.g. Rs. 35,000 to Rs. 75,000 PKR, Direct Sales ya Leads?)`)
 
         setChatMessages((prev) => [
           ...prev,
@@ -574,7 +573,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
         // Step 3: User answered Budget & Goal
         let currentBudget = selectedBudget
         const numMatch = textToSend.replace(/,/g, '').match(/\d+/)
-        if (numMatch && parseInt(numMatch[0]) >= 5000) {
+        if (numMatch && parseInt(numMatch[0]) >= 1000) {
           currentBudget = parseInt(numMatch[0])
           setSelectedBudget(currentBudget)
         }
@@ -595,15 +594,20 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
           .replace(/.*(?:business|brand|karobar).*?(?:naam|name|category|niche).*?\?/gi, '')
           .trim()
         if (!cleanReply) {
-          cleanReply = `Budget ${formatPKR(currentBudget)} PKR confirm ho gaya.`
+          cleanReply = `Budget ${currentBudget} confirm ho gaya.`
         }
+
+        const isUae = /\b(uae|dubai|sharjah|abu dhabi|aed)\b/i.test(targetAudienceText.toLowerCase())
+        const step4Prompt = isUae
+          ? `${cleanReply}\n\n🎁 **Step 4 (Special Offer & USP):**\nKya aapke paas koi special offer ya USP hai? (Jaise: Free 3D Landscape Concept, 10-Year Pool Warranty, ya High Quality Service?)`
+          : `${cleanReply}\n\n🎁 **Step 4 (Special Offer & Hook):**\nKya aapke paas koi special offer, bonus ya hook hai? (Jaise: Free Consultation, Flat 25% OFF, ya Free Delivery?)`
 
         setChatMessages((prev) => [
           ...prev,
           {
             id: 'ai_' + Date.now(),
             sender: 'ai',
-            text: `${cleanReply}\n\n🎁 **Step 4 (Special Offer & Hook):**\nKya aapke paas koi special offer, bonus ya hook hai? (Jaise: Free to Play + Starter Bonus, Flat 25% OFF, ya Free Delivery?)`
+            text: step4Prompt
           }
         ])
       } else if (interviewStage === 3) {
@@ -1204,10 +1208,10 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                     <>
                       <button
                         type="button"
-                        onClick={() => handleSendChat(null, `${heroProduct} for Rs. 2,999`)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap hover:bg-slate-200 cursor-pointer"
+                        onClick={() => handleSendChat(null, 'Luxury Landscaping & Swimming Pool Works')}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap hover:bg-emerald-100 font-semibold cursor-pointer"
                       >
-                        🧥 {heroProduct} (Rs. 2,999)
+                        🏊‍♂️ Landscaping & Pool Works
                       </button>
                       <button
                         type="button"
@@ -1227,6 +1231,13 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                   )}
                   {interviewStage === 1 && (
                     <>
+                      <button
+                        type="button"
+                        onClick={() => handleSendChat(null, 'UAE (Dubai, Abu Dhabi) Villa & Property Owners')}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap hover:bg-emerald-100 font-bold cursor-pointer"
+                      >
+                        🇦🇪 UAE (Dubai & Abu Dhabi)
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleSendChat(null, 'usa, uk')}

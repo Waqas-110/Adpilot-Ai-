@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { 
-  X, 
-  SlidersHorizontal, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Lock, 
-  CreditCard, 
+import {
+  X,
+  SlidersHorizontal,
+  CheckCircle2,
+  AlertTriangle,
+  Lock,
+  CreditCard,
   Database,
   ExternalLink,
   Save,
@@ -59,7 +59,7 @@ export default function ConfigModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div 
+      <div
         className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl text-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
@@ -235,9 +235,8 @@ export default function ConfigModal() {
                 <Database className="w-4 h-4 text-emerald-600" />
                 <span>Supabase Configuration</span>
               </span>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                isSupabaseConfigured ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
-              }`}>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${isSupabaseConfigured ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
+                }`}>
                 {isSupabaseConfigured ? 'Live Supabase' : 'Active (OTP Service)'}
               </span>
             </div>

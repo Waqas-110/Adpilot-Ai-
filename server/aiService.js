@@ -1,29 +1,29 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+export const GROQ_PRIMARY_MODEL = 'openai/gpt-oss-120b'
+export const GROQ_FAST_MODEL = 'openai/gpt-oss-20b'
+
 /**
  * Intelligent Profile Detector:
- * Identifies whether the product is a Mobile Game, Digital App, or Physical eCommerce,
- * and whether the audience is Global / Worldwide or Local Pakistan.
+ * Identifies whether the product is a Mobile Game, Digital App, Luxury/Home Service, or Physical eCommerce,
+ * and whether the audience is Global, UAE / Middle East, or Local Pakistan.
  */
 export function detectCampaignProfile({ businessName, industry, niche, productDesc, targetAudience }) {
   const combined = `${businessName || ''} ${industry || ''} ${niche || ''} ${productDesc || ''}`.toLowerCase()
   const aud = `${targetAudience || ''}`.toLowerCase()
 
-  const isGame = combined.includes('game') || combined.includes('gaming') || combined.includes('gamer') || 
-                 combined.includes('rpg') || combined.includes('fps') || combined.includes('arcade') || 
-                 combined.includes('playstore') || combined.includes('steam') || combined.includes('unity') || 
-                 combined.includes('unreal') || combined.includes('puzzle')
+  const isGame = /\b(game|gaming|gamer|rpg|fps|arcade|playstore|steam|unity|unreal|puzzle)\b/i.test(combined)
 
-  const isAppOrDigital = isGame || combined.includes('app') || combined.includes('software') || 
-                         combined.includes('saas') || combined.includes('tool') || combined.includes('download') || 
-                         combined.includes('subscription') || combined.includes('digital') || combined.includes('course')
+  const isAppOrDigital = !isGame && /\b(software|saas|mobile app|web app|digital product|course|subscription)\b/i.test(combined)
 
-  const isGlobal = aud.includes('world') || aud.includes('global') || aud.includes('international') || 
-                   aud.includes('usa') || aud.includes('us') || aud.includes('uk') || aud.includes('all') || 
-                   aud.includes('tier 1') || aud.includes('tier-1') || aud.includes('europe') || aud.includes('asia')
+  const isUae = /\b(uae|dubai|sharjah|abu dhabi|ajman|aed|dirham|emirates)\b/i.test(aud) || /\b(uae|dubai|sharjah|abu dhabi|aed)\b/i.test(combined)
 
-  return { isGame, isAppOrDigital, isGlobal }
+  const isService = /\b(landscaping|garden|pool|swimming|interior|decor|cleaning|salon|clinic|repair|construction|plumbing|electrician|catering|hvac)\b/i.test(combined)
+
+  const isGlobal = isUae || /\b(world|global|international|usa|uk|america|britain|europe|canada|australia|tier 1|tier-1)\b/i.test(aud)
+
+  return { isGame, isAppOrDigital, isGlobal, isUae, isService }
 }
 
 /**
@@ -630,29 +630,40 @@ Return ONLY valid JSON (no markdown formatting, no code blocks, no backticks, ju
     let engineUsed = ''
 
     if (hasGroq) {
-      engineUsed = 'Groq LLM (llama-3.3-70b-versatile)'
-      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${groqApiKey}`
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert viral ad copywriter and algorithmic media buyer. You respond ONLY with valid raw JSON.'
+      engineUsed = `Groq LLM (${GROQ_PRIMARY_MODEL})`
+      for (const m of [GROQ_PRIMARY_MODEL, GROQ_FAST_MODEL, 'qwen/qwen3.8-27b']) {
+        try {
+          const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${groqApiKey}`
             },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          response_format: { type: 'json_object' }
-        })
-      })
+            body: JSON.stringify({
+              model: m,
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are an expert viral ad copywriter and algorithmic media buyer. You respond ONLY with valid raw JSON.'
+                },
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ],
+              temperature: 0.7,
+              response_format: { type: 'json_object' }
+            })
+          })
+          if (res.ok) {
+            response = res
+            engineUsed = `Groq LLM (${m})`
+            break
+          }
+        } catch (err) {
+          console.warn(`[AdPilot AI] Groq strategy model ${m} error:`, err.message)
+        }
+      }
     } else {
       engineUsed = 'OpenAI (gpt-4o-mini)'
       response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -744,35 +755,45 @@ Return ONLY raw valid JSON (no markdown, no backticks):
 
   try {
     if (groqApiKey && groqApiKey !== 'your_groq_api_key_here') {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${groqApiKey}`
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert viral ad copywriter. Respond ONLY with valid raw JSON.'
+      for (const m of [GROQ_PRIMARY_MODEL, GROQ_FAST_MODEL]) {
+        try {
+          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${groqApiKey}`
             },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.85,
-          response_format: { type: 'json_object' }
-        })
-      })
+            body: JSON.stringify({
+              model: m,
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are an expert viral ad copywriter. Respond ONLY with valid raw JSON.'
+                },
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ],
+              temperature: 0.85,
+              response_format: { type: 'json_object' }
+            })
+          })
 
-      if (response.ok) {
-        const data = await response.json()
-        const content = data.choices?.[0]?.message?.content
-        if (content) {
-          const cleanJson = content.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
-          return JSON.parse(cleanJson)
+          if (response.ok) {
+            const data = await response.json()
+            const content = data.choices?.[0]?.message?.content
+            if (content) {
+              const cleanJson = content.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
+              const parsed = JSON.parse(cleanJson)
+              return {
+                ...parsed,
+                engineUsed: `Groq LLM (${m})`
+              }
+            }
+          }
+        } catch (mErr) {
+          console.warn(`[AdPilot AI] Groq rewrite on ${m} error:`, mErr.message)
         }
       }
     }
@@ -814,7 +835,7 @@ Return ONLY raw valid JSON (no markdown, no backticks):
 }
 
 /**
- * Real-time Conversational AI Chat with Groq LLM (OpenAI / GPT-OSS 120B)
+ * Real-time Conversational AI Chat with Groq LLM (OpenAI / GPT-OSS 120B & 20B)
  */
 export async function chatWithLLM({ messages, businessContext }) {
   const groqApiKey = process.env.GROQ_API_KEY
@@ -824,101 +845,87 @@ export async function chatWithLLM({ messages, businessContext }) {
   const bNiche = businessContext?.niche && businessContext.niche !== 'Not specified' ? businessContext.niche : null
   const bProduct = businessContext?.productDesc && businessContext.productDesc !== 'Not specified' ? businessContext.productDesc : null
 
-  // Analyze conversation and context to detect global / international / gaming profile
+  // Analyze conversation and context
   const allUserText = (messages || []).map(m => m.text || m.content || '').join(' ').toLowerCase()
   const audText = (businessContext?.targetAudience || '').toLowerCase()
   const combinedAll = `${allUserText} ${audText} ${bProduct || ''} ${rawName || ''}`.toLowerCase()
 
-  const isGlobal = combinedAll.includes('usa') || combinedAll.includes('uk') || 
-                   combinedAll.includes('world') || combinedAll.includes('global') || 
-                   combinedAll.includes('international') || combinedAll.includes('us ') || 
-                   combinedAll.includes('america') || combinedAll.includes('britain')
-  
-  const isGame = combinedAll.includes('game') || combinedAll.includes('gaming') || 
-                 combinedAll.includes('rpg') || combinedAll.includes('play store') || 
-                 combinedAll.includes('app store')
+  const isUae = /\b(uae|dubai|sharjah|abu dhabi|ajman|aed|dirham|emirates)\b/i.test(combinedAll)
+  const isGlobal = isUae || /\b(world|global|international|usa|uk|america|britain|europe|canada|australia|tier 1|tier-1)\b/i.test(combinedAll)
+  const isGame = /\b(game|gaming|gamer|rpg|fps|arcade|playstore|steam|unity|unreal)\b/i.test(combinedAll)
 
-  // Clean brand name: if it was default 'Karachi Threads' but user is targeting USA/UK/Global or Games, don't brand as Karachi
-  const bName = (rawName === 'Karachi Threads' && (isGlobal || isGame)) ? 'Global Brand' : rawName
+  const bName = (rawName === 'Karachi Threads' && (isGlobal || isGame || isUae)) ? 'My Business' : rawName
 
-  const contextStr = businessContext
-    ? `\nCurrent Business Knowledge:
+  const locationContext = isUae 
+    ? 'Target Market: UAE (Dubai, Abu Dhabi, Sharjah). Currency: AED (Dirhams). Target: Local Emirati & Expat homeowners, villa owners, property investors.'
+    : (isGlobal 
+        ? 'Target Market: International / Global (USA, UK, Tier-1 countries).'
+        : 'Target Market: Pakistan & South Asia.')
+
+  const contextStr = `\nCurrent Business Knowledge:
 - Business Name: ${bName || 'Not specified'}
 - Niche/Category: ${bNiche || 'Not specified'}
-- Hero Product: ${bProduct || 'Not specified'}
-- Target Audience/Region: ${isGlobal ? 'USA, UK & International Tier-1' : (businessContext.targetAudience || 'Not specified')}
-- Monthly Ad Budget: ${businessContext.customBudget ? `Rs. ${businessContext.customBudget} PKR` : 'Not specified'}`
-    : ''
+- Hero Product/Service: ${bProduct || 'Not specified'}
+- Location Context: ${locationContext}
+- Monthly Ad Budget: ${businessContext?.customBudget ? `${businessContext.customBudget}` : 'Not specified'}`
 
   const systemMessage = {
     role: 'system',
-    content: isGlobal 
-      ? `You are AdPilot AI, an elite Media Buyer and Autonomous Ad Strategist specialized in Global Meta Facebook & Instagram Ads (USA, UK, Europe, Tier-1 International, TikTok & Reels, Shopify / Direct to Consumer).
-You speak in friendly, professional Roman Urdu and English.
-🚨 STRICT MANDATORY RULE - GLOBAL AUDIENCE:
-The user is targeting USA, UK, or International buyers. 
-DO NOT mention Karachi, Lahore, Pakistan, or Cash on Delivery (COD)! 
-NEVER suggest Pakistani cities or Pakistani courier companies. 
-Focus strictly on international audience targeting, Tier-1 cities (New York, California, London, Manchester), high ROAS conversion ads, and express global delivery.`
-      : `You are AdPilot AI, an elite Media Buyer and Autonomous Ad Strategist specialized in Meta Facebook/Instagram Ads.
-You speak in friendly, professional Roman Urdu and English (conversational business tone).
+    content: `You are AdPilot AI, an elite Media Buyer and Autonomous Ad Strategist specialized in Meta Facebook/Instagram Ads.
+You speak naturally in friendly, fluent Roman Urdu and English (expert marketing consultant tone).
 
-${bName ? `🚨 STRICT MANDATORY RULE - DO NOT ASK FOR BUSINESS NAME:
-The business name is ALREADY KNOWN as "${bName}" (${bNiche || 'eCommerce'}). The user has already provided this.
-NEVER ask the user "Aapke business ka naam kya hai?", "What is your business name?", or ask for their business/brand name again!
-Instead, address them by their brand name "${bName}" and directly discuss their product, target audience, budget, or strategy.` : `If business name is missing, ask for business name.`}
-
-Guidelines:
-- If the user provides info, acknowledge THEIR SPECIFIC brand/product warmly and guide them to the next question.
-- If the user has provided product and audience details or says "generate strategy" / "strategy banao", tell them enthusiastically that you are generating their customized strategy report.
-- Keep responses concise (2-3 sentences max) and actionable.${contextStr}`
+STRICT GUIDELINES:
+1. Always address and acknowledge the user's SPECIFIC product, service, and location! If they mention "Landscaping garden pool works" in UAE, praise and talk about luxury outdoor landscaping, villas, and swimming pools in UAE/Dubai! NEVER mention mobile games, fashion, or irrelevant items.
+2. ${isUae ? 'Location is UAE/Dubai. Do NOT mention Pakistan or local Pakistani courier companies. Mention AED / UAE homeowners.' : ''}
+3. ${bName ? `The business name is "${bName}". Do NOT ask for the business name again.` : ''}
+4. Keep responses concise (1 to 2 sentences max), positive, and enthusiastic.`
   }
 
   try {
     if (groqApiKey && groqApiKey !== 'your_groq_api_key_here') {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${groqApiKey}`
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            systemMessage,
-            ...messages.map((m) => ({
-              role: m.sender === 'user' || m.role === 'user' ? 'user' : 'assistant',
-              content: m.text || m.content || ''
-            }))
-          ],
-          temperature: 0.7,
-          max_tokens: 350
-        })
-      })
+      for (const m of [GROQ_FAST_MODEL, GROQ_PRIMARY_MODEL, 'qwen/qwen3.8-27b']) {
+        try {
+          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${groqApiKey}`
+            },
+            body: JSON.stringify({
+              model: m,
+              messages: [
+                systemMessage,
+                ...messages.map((m) => ({
+                  role: m.sender === 'user' || m.role === 'user' ? 'user' : 'assistant',
+                  content: m.text || m.content || ''
+                }))
+              ],
+              temperature: 0.7,
+              max_tokens: 250
+            })
+          })
 
-      if (response.ok) {
-        const data = await response.json()
-        let reply = data.choices?.[0]?.message?.content
-        if (reply) {
-          reply = reply.trim()
-          // Sanitize: If model accidentally asks for business name when business name is already known
-          if (bName) {
-            reply = reply
-              .replace(/Aapke\s+business\s+ka\s+naam\s+(?:aur\s+category\s+)?kya\s+hai\??/gi, '')
-              .replace(/What\s+is\s+your\s+business\s+name\??/gi, '')
-              .replace(/Aapke\s+brand\s+ka\s+naam\s+kya\s+hai\??/gi, '')
-              .trim()
-            if (!reply) {
-              reply = isGlobal 
-                ? `Bohat khoob! USA aur UK target market ke liye hum international high-ROAS Meta Ads strategy finalize kar rahe hain.`
-                : `Bohat khoob! '${bName}' ke liye hum high-ROAS Meta Ads strategy finalize kar rahe hain.`
+          if (response.ok) {
+            const data = await response.json()
+            let reply = data.choices?.[0]?.message?.content
+            if (reply) {
+              reply = reply.trim()
+              if (bName) {
+                reply = reply
+                  .replace(/Aapke\s+business\s+ka\s+naam\s+(?:aur\s+category\s+)?kya\s+hai\??/gi, '')
+                  .replace(/What\s+is\s+your\s+business\s+name\??/gi, '')
+                  .replace(/Aapke\s+brand\s+ka\s+naam\s+kya\s+hai\??/gi, '')
+                  .trim()
+              }
+
+              return {
+                reply: reply || `Bohat khoob! '${bProduct || bName}' ke liye high-converting Meta Ads strategy prepare kar rahe hain.`,
+                provider: `Groq LLM (${m})`
+              }
             }
           }
-
-          return {
-            reply: reply,
-            provider: 'Groq LLM (llama-3.3-70b-versatile)'
-          }
+        } catch (mErr) {
+          console.warn(`[AdPilot AI] Groq chat on ${m} error:`, mErr.message)
         }
       }
     }
@@ -926,17 +933,16 @@ Guidelines:
     console.warn('[AdPilot AI] Groq chat error:', err.message)
   }
 
-  // Fallback conversational reply
-  if (isGlobal) {
-    return {
-      reply: `Bohat khoob! USA aur UK target market ke liye hum international high-ROAS Meta Ads strategy prepare kar rahe hain.`,
-      provider: 'AdPilot Smart Response'
+  // Dynamic context-aware fallback (NEVER fake or irrelevant)
+  if (bProduct) {
+    if (isUae) {
+      return {
+        reply: `Bohat khoob! UAE market mein '${bProduct}' ke liye high-ticket villa & homeowner Meta Ads strategy plan kar rahe hain.`,
+        provider: 'AdPilot Smart Response'
+      }
     }
-  }
-
-  if (isGame) {
     return {
-      reply: `Bohat khoob! Mobile Game player acquisition aur app installs ke liye high-converting Meta Ads strategy prepare kar rahe hain.`,
+      reply: `Bohat khoob! '${bProduct}' ke liye hum high-ROAS Meta Ads strategy prepare kar rahe hain.`,
       provider: 'AdPilot Smart Response'
     }
   }
