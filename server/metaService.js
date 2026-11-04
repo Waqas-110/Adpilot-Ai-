@@ -190,7 +190,9 @@ export async function updateMetaCampaignBudget({ adSetId, newBudget }) {
 /**
  * 5. Fetch Real-Time Performance Insights for Graph / Analytics
  */
-export async function getMetaCampaignInsights({ campaignId, datePreset = 'last_30d' }) {
+export async function getMetaCampaignInsights(params = {}) {
+  const campaignId = typeof params === 'string' ? params : params?.campaignId
+  const datePreset = typeof params === 'object' && params?.datePreset ? params.datePreset : 'last_30d'
   const token = process.env.META_ACCESS_TOKEN
   const adAccountId = formatAdAccountId(process.env.META_AD_ACCOUNT_ID)
 
