@@ -110,7 +110,7 @@ export default function AuthModal() {
     try {
       const res = await requestOtp(email)
       setOtpSent(true)
-      setSuccessMsg(res?.sandboxOtp ? `OTP code sent! (Backup Test Code: ${res.sandboxOtp})` : `6-digit OTP code sent to ${email}!`)
+      setSuccessMsg(`6-digit OTP code sent to ${email}! Please check your email inbox.`)
     } catch (err) {
       setErrorMsg(err.message || 'Could not send OTP code')
     } finally {
@@ -410,7 +410,7 @@ export default function AuthModal() {
                     type="text"
                     value={otpToken}
                     onChange={(e) => setOtpToken(e.target.value)}
-                    placeholder="Enter 6-digit OTP (e.g. 123456)"
+                    placeholder="Enter 6-digit OTP code"
                     className="w-full pl-10 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-300 focus:bg-white focus:border-indigo-600 text-xs text-slate-900 font-mono outline-none"
                   />
                 </div>

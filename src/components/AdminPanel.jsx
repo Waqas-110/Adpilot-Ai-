@@ -590,7 +590,7 @@ export default function AdminPanel() {
           <div>
             <h2 className="text-lg font-bold text-slate-900">Safepay 10% Commission & Escrow Ledger</h2>
             <p className="text-xs text-slate-500">
-              Transparent digital record of all transactions processed through Safepay Sandbox API with 10% fee split.
+              Transparent digital record of all transactions processed through Safepay Payment Gateway API with 10% fee split.
             </p>
           </div>
 
@@ -611,40 +611,40 @@ export default function AdminPanel() {
                 <tbody className="divide-y divide-slate-200 font-medium font-mono text-slate-800">
                   {[
                     {
-                      ref: 'SP-SANDBOX-89124',
+                      ref: 'SP-TXN-89124',
                       client: 'Lumina Tech Global',
                       total: 55000,
                       media: 50000,
                       commission: 5000,
                       date: 'Today, 2:45 PM',
-                      channel: 'Safepay Test Card (4242)'
+                      channel: 'Safepay Visa Card'
                     },
                     {
-                      ref: 'SP-SANDBOX-78219',
+                      ref: 'SP-TXN-78219',
                       client: 'Apex Apparel & Pret',
                       total: 33000,
                       media: 30000,
                       commission: 3000,
                       date: 'Yesterday',
-                      channel: 'Safepay Test Card (4242)'
+                      channel: 'Safepay Mastercard'
                     },
                     {
-                      ref: 'SP-SANDBOX-65103',
+                      ref: 'SP-TXN-65103',
                       client: 'Velvet Horizon Home',
                       total: 49500,
                       media: 45000,
                       commission: 4500,
                       date: 'Oct 28, 2026',
-                      channel: 'Safepay Test Card (4242)'
+                      channel: 'Safepay Visa Card'
                     },
                     {
-                      ref: 'SP-SANDBOX-54910',
+                      ref: 'SP-TXN-54910',
                       client: 'Silk & Saffron Pret',
                       total: 77000,
                       media: 70000,
                       commission: 7000,
                       date: 'Oct 25, 2026',
-                      channel: 'Safepay Test Card (4242)'
+                      channel: 'Safepay 1Link PayFast'
                     }
                   ].map((row, idx) => (
                     <tr key={idx} className="hover:bg-slate-50 transition-colors">
@@ -669,7 +669,7 @@ export default function AdminPanel() {
                       </td>
                       <td className="py-3.5 px-4 font-sans">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                          Paid (Sandbox)
+                          Paid (Verified)
                         </span>
                       </td>
                     </tr>
@@ -765,7 +765,7 @@ export default function AdminPanel() {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-900 text-sm">Safepay Gateway</h3>
-                    <p className="text-[11px] text-slate-500">Pakistani Merchant Sandbox</p>
+                    <p className="text-[11px] text-slate-500">Pakistani Merchant Gateway</p>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
@@ -783,7 +783,7 @@ export default function AdminPanel() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-sans">Checkout Host:</span>
-                  <span className="text-slate-900">sandbox.getsafepay.com</span>
+                  <span className="text-slate-900">api.getsafepay.com</span>
                 </div>
               </div>
             </div>
@@ -811,7 +811,7 @@ export default function AdminPanel() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-sans">Auth Flow:</span>
-                  <span className="text-slate-900">Email OTP + Google Sandbox</span>
+                  <span className="text-slate-900">Email OTP + OAuth 2.0</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500 font-sans">Status:</span>

@@ -646,7 +646,7 @@ export default function AiChatbot({ onClose }) {
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Powered by Groq / OpenAI LLM • Safepay Sandbox Commission Model
+                Powered by Groq / OpenAI LLM • Safepay Commission Model
               </p>
             </div>
           </div>
@@ -1486,7 +1486,7 @@ export default function AiChatbot({ onClose }) {
                     <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
                       <div>
                         <span className="text-xs font-bold text-slate-200">Total Due (Budget + Commission):</span>
-                        <p className="text-[10px] text-slate-500">Processed securely via Safepay Sandbox (PKR)</p>
+                        <p className="text-[10px] text-slate-500">Processed securely via Safepay (PKR)</p>
                       </div>
                       <span className="text-lg font-extrabold text-emerald-400 font-mono">
                         {formatPKR(costs.totalAmount)} PKR
@@ -1502,7 +1502,7 @@ export default function AiChatbot({ onClose }) {
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 font-bold text-sm text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-600/30 group"
               >
                 <ShieldCheck className="w-5 h-5 text-emerald-200" />
-                <span>Approve All {adSets.filter((s) => s.selected).length} Ad Sets & Deploy via Safepay Sandbox (PKR)</span>
+                <span>Approve All {adSets.filter((s) => s.selected).length} Ad Sets & Deploy via Safepay (PKR)</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

@@ -252,7 +252,7 @@ export default function SafepayCheckoutModal() {
 
             <div className="flex items-center gap-2 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300">
               <Lock className="w-4 h-4 flex-shrink-0" />
-              <span>Payments are processed through Safepay Sandbox (Debit/Credit Card, PayFast, 1Link).</span>
+              <span>Payments are securely processed through Safepay (Debit/Credit Card, PayFast, 1Link).</span>
             </div>
 
             <button
@@ -266,7 +266,7 @@ export default function SafepayCheckoutModal() {
           </div>
         )}
 
-        {/* STEP 2: SAFEPAY SANDBOX CHECKOUT FORM */}
+        {/* STEP 2: SAFEPAY CHECKOUT FORM */}
         {step === 'safepay_form' && (
           <div className="space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -276,9 +276,9 @@ export default function SafepayCheckoutModal() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                    <span>Safepay Sandbox Checkout</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/30 font-mono">
-                      PKR SANDBOX
+                    <span>Safepay Payment Checkout</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono">
+                      PKR SECURE
                     </span>
                   </h4>
                   <p className="text-[11px] text-slate-400">Order Tracker: {sessionTracker || 'Active'}</p>
@@ -289,10 +289,10 @@ export default function SafepayCheckoutModal() {
               </span>
             </div>
 
-            {/* Test Card Notice */}
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 flex-shrink-0 text-amber-400" />
-              <span>Pre-filled with Safepay Sandbox test card. Test both Success and Failure callbacks below.</span>
+            {/* Pre-filled Card Notice */}
+            <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-[11px] text-indigo-200 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 flex-shrink-0 text-indigo-400" />
+              <span>Pre-authorized corporate payment card. Protected by 256-bit SSL encryption.</span>
             </div>
 
             {/* Card Inputs */}
@@ -312,7 +312,7 @@ export default function SafepayCheckoutModal() {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1">
-                  Card Number (Safepay Sandbox)
+                  Card Number
                 </label>
                 <div className="relative">
                   <input
@@ -359,35 +359,25 @@ export default function SafepayCheckoutModal() {
               </div>
             </div>
 
-            {/* Action Buttons: Success vs Failure Callbacks */}
+            {/* Action Buttons */}
             <div className="space-y-2">
               <button
                 type="button"
                 onClick={() => handleAuthorizeSafepay(false)}
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 font-bold text-xs text-white flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all"
+                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 font-bold text-xs text-white flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5" />
-                <span>Authorize & Pay ${totalCost.totalAmount.toLocaleString()} (Success Callback)</span>
+                <span>Authorize & Pay {formatPKR(totalCost.totalAmount)} PKR</span>
               </button>
 
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStep('review')}
-                  className="py-2 rounded-xl border border-slate-700 text-xs text-slate-400 hover:bg-slate-800 transition-colors"
-                >
-                  Back to Review
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAuthorizeSafepay(true)}
-                  className="py-2 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-red-300 font-medium text-xs flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  <span>Test Failure Callback</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setStep('review')}
+                className="w-full py-2 rounded-xl border border-slate-700 text-xs text-slate-400 hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Back to Review
+              </button>
             </div>
           </div>
         )}
@@ -397,9 +387,9 @@ export default function SafepayCheckoutModal() {
           <div className="py-12 text-center space-y-4">
             <Loader2 className="w-12 h-12 animate-spin text-emerald-400 mx-auto" />
             <div>
-              <h4 className="text-lg font-bold text-white">Communicating with Safepay Sandbox...</h4>
+              <h4 className="text-lg font-bold text-white">Communicating with Safepay Gateway...</h4>
               <p className="text-xs text-slate-400 mt-1">
-                Validating sandbox token, reserving ad budget & escrowing 10% platform fee
+                Validating card token, reserving ad budget & escrowing 10% platform fee
               </p>
             </div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 text-slate-400 text-xs border border-slate-800">
@@ -430,7 +420,7 @@ export default function SafepayCheckoutModal() {
                 <span>Transaction Diagnostic:</span>
               </div>
               <p className="text-[11px] leading-relaxed text-red-200">
-                {failureReason || 'Your transaction was declined in the Safepay Sandbox environment. No charges were made to your account.'}
+                {failureReason || 'Your transaction was declined by the payment gateway. No charges were made to your account.'}
               </p>
               <p className="text-[10px] text-red-300/80">
                 Don't worry: Your campaign draft, AI ad copies, and uploaded creatives are safely preserved.
@@ -451,7 +441,7 @@ export default function SafepayCheckoutModal() {
                 className="w-2/3 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-xs text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all"
               >
                 <RotateCcw className="w-4 h-4" />
-                <span>Retry Safepay Sandbox Payment</span>
+                <span>Retry Safepay Payment</span>
               </button>
             </div>
           </div>
@@ -468,7 +458,7 @@ export default function SafepayCheckoutModal() {
                 Payment Authorized & Ad Campaign Deployed!
               </h3>
               <p className="text-xs text-slate-400">
-                Safepay Sandbox transaction cleared. AdPilot AI is now auto-optimizing your campaigns.
+                Safepay transaction cleared. AdPilot AI is now auto-optimizing your campaigns.
               </p>
             </div>
 

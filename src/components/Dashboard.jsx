@@ -728,7 +728,7 @@ export default function Dashboard() {
             <div className="p-6 rounded-2xl glass-card border border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white">Safepay Sandbox Payment History (PKR)</h3>
+                  <h3 className="text-base font-bold text-white">Safepay Payment History (PKR)</h3>
                   <p className="text-xs text-slate-400">
                     Real-time payment intents, tokenized orders and fee breakdown
                   </p>

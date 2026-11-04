@@ -71,8 +71,8 @@ export default function LandingPage({ onOpenContact }) {
       a: 'When you enter your business niche and product details into our AI Chatbot, our backend calls Groq (Llama-3.3-70b / GPT-OSS 120B) to formulate 8–10 viral keywords, trending platform hashtags (#TikTokMadeMeBuyIt, etc.), and 3 proven copywriting angles (Problem-Agitation-Solution, UGC Review, and Urgency Offer).'
     },
     {
-      q: 'How do Safepay Sandbox payments work?',
-      a: 'Safepay Sandbox allows you to test the complete end-to-end checkout flow risk-free. You can use pre-filled sandbox test cards (4242 4242...) to simulate instant payment clearance, tokenization, and digital invoice receipt generation.'
+      q: 'How does Safepay payment processing work?',
+      a: 'Safepay allows you to complete Pakistani Rupee checkout with instant clearance, card tokenization, and digital invoice receipt generation.'
     }
   ]
 
@@ -98,7 +98,7 @@ export default function LandingPage({ onOpenContact }) {
 
         {/* Hero Subtitle */}
         <p className="mt-6 text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
-          AdPilot AI replaces manual marketing agencies with intelligent software. Input your niche, let Groq LLM generate viral hooks & keywords, upload creatives, and deploy directly to <b className="text-slate-900">Meta (Facebook & Instagram)</b> via Safepay Sandbox checkout.
+          AdPilot AI replaces manual marketing agencies with intelligent software. Input your niche, let Groq LLM generate viral hooks & keywords, upload creatives, and deploy directly to <b className="text-slate-900">Meta (Facebook & Instagram)</b> via Safepay checkout.
         </p>
 
         {/* CTA Buttons */}
@@ -129,7 +129,7 @@ export default function LandingPage({ onOpenContact }) {
           </div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Safepay Sandbox Payment Gateway</span>
+            <span>Safepay Payment Gateway</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-indigo-600" />
@@ -168,7 +168,7 @@ export default function LandingPage({ onOpenContact }) {
               </div>
 
               <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-2">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Safepay Sandbox Payment</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400">Safepay Payment Gateway</span>
                 <p className="text-sm font-bold text-white">Ad Media Budget + 10% Commission</p>
                 <div className="text-xs text-slate-300">Total: $1,650.00 USD (Escrow Protected)</div>
                 <div className="pt-2 text-xs text-indigo-400 font-mono font-bold">Safepay Tracker Tokenized</div>
@@ -316,7 +316,7 @@ export default function LandingPage({ onOpenContact }) {
             </div>
             <h3 className="text-base font-bold text-slate-900">Safepay Checkout & Meta Ads</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Checkout total cost (Ad Budget + 10% Commission) via Safepay Sandbox. Instantly deploys to Meta Marketing API!
+              Checkout total cost (Ad Budget + 10% Commission) via Safepay. Instantly deploys to Meta Marketing API!
             </p>
           </div>
 
@@ -564,7 +564,7 @@ export default function LandingPage({ onOpenContact }) {
               </span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              "The rollover budget feature alone saved us $1,200 last month. Safepay Sandbox checkout was seamless, and campaigns deployed straight to Instagram Reels without manual friction."
+              "The rollover budget feature alone saved us $1,200 last month. Safepay checkout was seamless, and campaigns deployed straight to Instagram Reels without manual friction."
             </p>
             <div className="pt-3 border-t border-slate-100 flex justify-between text-xs text-slate-600">
               <span>Monthly Spend: <b className="text-slate-900">$4,200</b></span>

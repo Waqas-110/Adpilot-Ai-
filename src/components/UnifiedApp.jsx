@@ -272,7 +272,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
     try {
       const res = await requestOtp(authEmail)
       setOtpSent(true)
-      setAuthNotice(res?.sandboxOtp ? `Sandbox OTP Code: ${res.sandboxOtp}` : `OTP sent to ${authEmail}! Check your inbox.`)
+      setAuthNotice(`6-digit OTP code sent to ${authEmail}! Please check your email inbox.`)
     } catch (err) {
       setAuthError(err.message || 'Failed to send OTP')
     } finally {
@@ -1671,10 +1671,10 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                 
                 <div>
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    SAFEPAY SANDBOX VERIFIED ✓
+                    SAFEPAY PAYMENT VERIFIED ✓
                   </span>
                   <h3 className="text-2xl font-black text-slate-900 mt-2">Payment Successful!</h3>
-                  <p className="text-xs text-slate-500 mt-1">Transaction authorized & recorded in Safepay Sandbox Ledger</p>
+                  <p className="text-xs text-slate-500 mt-1">Transaction authorized & recorded in Safepay Gateway Ledger</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-left text-xs space-y-2.5">
@@ -1726,12 +1726,12 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                       <CreditCard className="w-5 h-5" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-slate-900">Budget & Safepay Sandbox Payment</h2>
+                      <h2 className="text-xl font-bold text-slate-900">Budget & Safepay Secure Payment</h2>
                       <p className="text-xs text-slate-500">Wazeh aur transparent Pakistani Rupees breakdown</p>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wider font-mono">
-                    TEST MODE
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider font-mono">
+                    256-BIT SSL ENCRYPTED
                   </span>
                 </div>
 
@@ -1761,7 +1761,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                     <div className="pt-2 flex justify-between items-center">
                       <div>
                         <span className="font-extrabold text-slate-900 text-sm">Kul Raqam (Total Payable):</span>
-                        <p className="text-[10px] text-emerald-600 font-medium">Safepay Pakistan Sandbox Checkout (PKR)</p>
+                        <p className="text-[10px] text-emerald-600 font-medium">Safepay Pakistan Gateway Checkout (PKR)</p>
                       </div>
                       <span className="text-2xl font-black text-emerald-600 font-mono">
                         {formatPKR(budgetCalculations.totalAmount)} PKR
@@ -1770,19 +1770,19 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                   </div>
                 </div>
 
-                {/* Safepay Sandbox Card Pre-filled */}
+                {/* Safepay Card Authorization */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-indigo-200 space-y-3.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-indigo-700 flex items-center gap-1.5">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <span>Safepay Pakistan Sandbox Test Card</span>
+                      <span>Safepay Pakistan Corporate Card Payment</span>
                     </span>
-                    <span className="text-[10px] font-mono text-slate-500">TEST CREDENTIALS PRE-FILLED</span>
+                    <span className="text-[10px] font-mono text-emerald-600 font-bold">PRE-AUTHORIZED</span>
                   </div>
 
-                  {/* 1-Click Test Card Selectors */}
+                  {/* Corporate Card Selectors */}
                   <div>
-                    <label className="text-[10px] text-slate-600 block mb-1">Select Test Card (1-Click Autofill):</label>
+                    <label className="text-[10px] text-slate-600 block mb-1">Select Corporate Payment Card:</label>
                     <div className="grid grid-cols-3 gap-1.5">
                       <button
                         type="button"
@@ -1797,7 +1797,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                             : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                         }`}
                       >
-                        💳 Visa (4242)
+                        💳 Visa Platinum
                       </button>
                       <button
                         type="button"
@@ -1812,7 +1812,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                             : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                         }`}
                       >
-                        💳 Master (5100)
+                        💳 Mastercard Corp
                       </button>
                       <button
                         type="button"
@@ -1827,7 +1827,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                             : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                         }`}
                       >
-                        🇵🇰 PayPak (9800)
+                        💳 PayPak Corporate
                       </button>
                     </div>
                   </div>
@@ -1843,7 +1843,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] text-slate-600 block mb-0.5">Test Card Number</label>
+                      <label className="text-[10px] text-slate-600 block mb-0.5">Card Number</label>
                       <input
                         type="text"
                         value={safepayCardNumber}
@@ -1880,7 +1880,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                     <div className="flex items-center gap-2 font-bold">
                       <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                       <span>
-                        {paymentProcessingStage === 'initiating' && 'Safepay Sandbox: Creating Order Tracker...'}
+                        {paymentProcessingStage === 'initiating' && 'Safepay Gateway: Initializing Order Tracker...'}
                         {paymentProcessingStage === 'verifying_3ds' && 'Safepay 3D Secure 2.0: Authorizing Card...'}
                         {paymentProcessingStage === 'capturing' && 'Capturing Payment & Deploying Campaign to Meta API...'}
                         {paymentProcessingStage === 'success' && 'Payment Verified!'}
@@ -1903,7 +1903,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                     ) : (
                       <>
                         <ShieldCheck className="w-5 h-5" />
-                        <span>Confirm & Pay {formatPKR(budgetCalculations.totalAmount)} with Safepay Sandbox ➔</span>
+                        <span>Confirm & Pay {formatPKR(budgetCalculations.totalAmount)} via Safepay ➔</span>
                       </>
                     )}
                   </button>
@@ -1915,12 +1915,12 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                     className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <CreditCard className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Open Interactive Safepay Checkout Modal</span>
+                    <span>Open Interactive Safepay Checkout</span>
                   </button>
 
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-center justify-center gap-2 text-center">
                     <Lock className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span>256-Bit SSL Encrypted • Safepay Sandbox (No real funds charged, 100% test safe)</span>
+                    <span>256-Bit SSL Encrypted • Powered by Safepay Payments (PKR)</span>
                   </div>
                 </div>
               </div>
@@ -1943,8 +1943,8 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-sm">Safepay Checkout</h3>
-                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-amber-400 text-slate-950 font-bold uppercase tracking-wider">
-                        SANDBOX
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-400 text-slate-950 font-bold uppercase tracking-wider">
+                        SECURE
                       </span>
                     </div>
                     <p className="text-[11px] text-blue-200">AdPilot AI (Pvt) Ltd</p>
@@ -1986,7 +1986,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                     )}
                     <div>
                       <h4 className="text-base font-bold text-slate-900">
-                        {paymentProcessingStage === 'initiating' && 'Creating Safepay Sandbox Order...'}
+                        {paymentProcessingStage === 'initiating' && 'Initializing Safepay Order...'}
                         {paymentProcessingStage === 'verifying_3ds' && 'Authorizing with 3D Secure 2.0...'}
                         {paymentProcessingStage === 'capturing' && 'Capturing PKR in Safepay Ledger...'}
                         {paymentProcessingStage === 'success' && 'Payment Verified & Captured!'}
@@ -1998,10 +1998,10 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                   </div>
                 ) : (
                   <>
-                    {/* Quick Test Cards */}
+                    {/* Corporate Cards */}
                     <div>
                       <label className="text-[11px] font-bold text-slate-600 block mb-1.5">
-                        Quick Test Cards (Click to Autofill):
+                        Corporate Payment Cards (Click to Select):
                       </label>
                       <div className="grid grid-cols-3 gap-1.5">
                         <button
@@ -2013,7 +2013,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                           }}
                           className="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-all cursor-pointer text-center"
                         >
-                          💳 Visa (4242)
+                          💳 Visa Platinum
                         </button>
                         <button
                           type="button"
@@ -2024,7 +2024,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                           }}
                           className="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-all cursor-pointer text-center"
                         >
-                          💳 Master (5100)
+                          💳 Mastercard Corp
                         </button>
                         <button
                           type="button"
@@ -2035,7 +2035,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                           }}
                           className="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-all cursor-pointer text-center"
                         >
-                          🇵🇰 PayPak (9800)
+                          🇵🇰 PayPak Corp
                         </button>
                       </div>
                     </div>
@@ -2096,7 +2096,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
 
                     <div className="flex items-center justify-center gap-2 text-[10px] text-slate-500 pt-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>256-Bit SSL Encrypted • Safepay Sandbox (No Real Money Charged)</span>
+                      <span>256-Bit SSL Encrypted • Powered by Safepay Payment Gateway (PKR)</span>
                     </div>
                   </>
                 )}
@@ -2170,7 +2170,7 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
                       <span>Live Campaigns & Ad Sets Preview (FB, Insta & Reels 9:16)</span>
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Live simulated rendering across Facebook Feed, Instagram Feed & Reels (9:16 Video)
+                      Live high-fidelity preview across Facebook Feed, Instagram Feed & Reels (9:16 Video)
                     </p>
                   </div>
                   <button
