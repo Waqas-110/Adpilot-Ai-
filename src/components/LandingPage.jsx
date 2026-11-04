@@ -31,6 +31,7 @@ import {
   ArrowUpRight,
   X
 } from 'lucide-react'
+import InstagramIcon from './InstagramIcon'
 import adPilotLogo from '../assets/logo.png'
 
 export default function LandingPage({ onOpenContact }) {
@@ -676,7 +677,16 @@ export default function LandingPage({ onOpenContact }) {
               </a>
             </p>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <a 
+              href="https://www.instagram.com/adpilotaiofficial/" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold transition-all shadow-xs"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-pink-600" />
+              <span>@adpilotaiofficial</span>
+            </a>
             <span className="hover:text-slate-800 cursor-pointer" onClick={onOpenContact}>Contact Us</span>
             <span className="hover:text-slate-800 cursor-pointer">Privacy Policy</span>
             <span className="hover:text-slate-800 cursor-pointer">Terms of Service</span>

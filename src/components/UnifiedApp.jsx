@@ -52,6 +52,7 @@ import {
   Eye,
   X
 } from 'lucide-react'
+import InstagramIcon from './InstagramIcon'
 
 export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
   const { user, requestOtp, verifyOtp, logout, isSupabaseConfigured, setIsAuthModalOpen, setAuthModalMode } = useAuth()
@@ -2589,18 +2590,30 @@ export default function UnifiedApp({ onViewLandingPage, onViewAdmin }) {
             <span className="font-semibold text-slate-900">AdPilot AI</span>
             <span>• Autonomous Meta Advertising & Safepay Gateway</span>
           </div>
-          <div className="flex items-center gap-1.5 font-medium text-slate-700">
-            <span>Developed by</span>
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 font-medium text-slate-700">
+            <div className="flex items-center gap-1.5">
+              <span>Developed by</span>
+              <a
+                href="https://github.com/Waqas-110"
+                target="_blank"
+                rel="noreferrer"
+                className="font-bold text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1"
+              >
+                Waqas Anwar
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono">
+                  Lead
+                </span>
+              </a>
+            </div>
+            <span className="text-slate-300">•</span>
             <a
-              href="https://github.com/Waqas-110"
+              href="https://www.instagram.com/adpilotaiofficial/"
               target="_blank"
               rel="noreferrer"
-              className="font-bold text-indigo-600 hover:text-indigo-800 hover:underline inline-flex items-center gap-1"
+              className="inline-flex items-center gap-1 font-bold text-pink-600 hover:text-pink-700 hover:underline"
             >
-              Waqas Anwar
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono">
-                Lead
-              </span>
+              <InstagramIcon className="w-3.5 h-3.5" />
+              <span>@adpilotaiofficial</span>
             </a>
           </div>
           <div className="text-[11px] text-slate-400">

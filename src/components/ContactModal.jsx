@@ -11,6 +11,7 @@ import {
   Sparkles,
   Phone
 } from 'lucide-react'
+import InstagramIcon from './InstagramIcon'
 
 export default function ContactModal({ isOpen, onClose }) {
   const [name, setName] = useState('')
@@ -155,6 +156,19 @@ export default function ContactModal({ isOpen, onClose }) {
             </button>
           </form>
         )}
+
+        <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span>Official Social Profile:</span>
+          <a
+            href="https://www.instagram.com/adpilotaiofficial/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 font-bold text-pink-600 hover:text-pink-700 hover:underline"
+          >
+            <InstagramIcon className="w-3.5 h-3.5 text-pink-600" />
+            <span>@adpilotaiofficial</span>
+          </a>
+        </div>
       </div>
     </div>
   )

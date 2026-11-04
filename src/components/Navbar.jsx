@@ -12,6 +12,7 @@ import {
   Sparkles,
   Zap
 } from 'lucide-react'
+import InstagramIcon from './InstagramIcon'
 
 export default function Navbar({ onOpenContact }) {
   const { user, logout, setIsAuthModalOpen, setAuthModalMode, isSupabaseConfigured } = useAuth()
@@ -145,6 +146,17 @@ export default function Navbar({ onOpenContact }) {
 
         {/* Right CTA / Auth Status */}
         <div className="flex items-center gap-3">
+          <a
+            href="https://www.instagram.com/adpilotaiofficial/"
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold transition-all"
+            title="Follow AdPilot AI on Instagram"
+          >
+            <InstagramIcon className="w-3.5 h-3.5 text-pink-600" />
+            <span>@adpilotaiofficial</span>
+          </a>
+
           {!user ? (
             <div className="flex items-center gap-2">
               <button
