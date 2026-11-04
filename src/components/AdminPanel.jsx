@@ -2,26 +2,26 @@ import React, { useState, useEffect } from 'react'
 import { useCampaign } from '../context/CampaignContext'
 import { useAuth } from '../context/AuthContext'
 import { formatPKR } from '../services/safepay'
-import { 
-  ShieldCheck, 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
-  Activity, 
-  Layers, 
-  CheckCircle2, 
-  AlertCircle, 
-  Play, 
-  Pause, 
-  ExternalLink, 
-  Server, 
-  Sparkles, 
-  RefreshCw, 
-  Lock, 
-  Key, 
-  Search, 
-  Filter, 
-  ArrowUpRight, 
+import {
+  ShieldCheck,
+  Users,
+  DollarSign,
+  TrendingUp,
+  Activity,
+  Layers,
+  CheckCircle2,
+  AlertCircle,
+  Play,
+  Pause,
+  ExternalLink,
+  Server,
+  Sparkles,
+  RefreshCw,
+  Lock,
+  Key,
+  Search,
+  Filter,
+  ArrowUpRight,
   CreditCard,
   Database,
   Cpu,
@@ -171,7 +171,7 @@ export default function AdminPanel() {
   // Calculate Aggregated Metrics across all campaigns & businesses
   const userCampaignsBudget = campaigns.reduce((sum, c) => sum + (c.adBudget || 0), 0)
   const userCommissionTotal = campaigns.reduce((sum, c) => sum + (c.commissionPaid || 0), 0)
-  
+
   const totalBusinessesCount = businesses.length + (user ? 1 : 0)
   const allBusinessesBudget = businesses.reduce((sum, b) => sum + b.totalAdBudget, 0) + userCampaignsBudget
   const allCommissionEarned = businesses.reduce((sum, b) => sum + b.commissionPaid, 0) + userCommissionTotal
@@ -340,11 +340,10 @@ export default function AdminPanel() {
       <div className="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto">
         <button
           onClick={() => setAdminTab('overview')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-            adminTab === 'overview'
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${adminTab === 'overview'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Layers className="w-3.5 h-3.5" />
           <span>Active Client Campaigns ({campaigns.length})</span>
@@ -352,11 +351,10 @@ export default function AdminPanel() {
 
         <button
           onClick={() => setAdminTab('businesses')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-            adminTab === 'businesses'
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${adminTab === 'businesses'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Users className="w-3.5 h-3.5" />
           <span>Registered Business Owners ({totalBusinessesCount})</span>
@@ -364,11 +362,10 @@ export default function AdminPanel() {
 
         <button
           onClick={() => setAdminTab('ledger')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-            adminTab === 'ledger'
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${adminTab === 'ledger'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <CreditCard className="w-3.5 h-3.5" />
           <span>Safepay 10% Commission Ledger</span>
@@ -376,11 +373,10 @@ export default function AdminPanel() {
 
         <button
           onClick={() => setAdminTab('api-health')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-            adminTab === 'api-health'
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${adminTab === 'api-health'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Server className="w-3.5 h-3.5" />
           <span>API Gateways Health Monitor</span>
@@ -426,8 +422,8 @@ export default function AdminPanel() {
                 </thead>
                 <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
                   {campaigns
-                    .filter((c) => 
-                      !searchQuery || 
+                    .filter((c) =>
+                      !searchQuery ||
                       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                       c.channels?.join(' ').toLowerCase().includes(searchQuery.toLowerCase())
                     )
@@ -461,16 +457,14 @@ export default function AdminPanel() {
                           </div>
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                            camp.status === 'Live'
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${camp.status === 'Live'
                               ? 'bg-emerald-100 text-emerald-800'
                               : camp.status === 'Optimizing'
-                              ? 'bg-cyan-100 text-cyan-800'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${
-                              camp.status === 'Live' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-                            }`} />
+                                ? 'bg-cyan-100 text-cyan-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${camp.status === 'Live' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                              }`} />
                             {camp.status}
                           </span>
                         </td>
@@ -480,11 +474,10 @@ export default function AdminPanel() {
                               toggleCampaignStatus(camp.id)
                               triggerToast(`Campaign status updated to ${camp.status === 'Live' ? 'Paused' : 'Live'}`)
                             }}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ml-auto cursor-pointer ${
-                              camp.status === 'Live'
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ml-auto cursor-pointer ${camp.status === 'Live'
                                 ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200'
                                 : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200'
-                            }`}
+                              }`}
                           >
                             {camp.status === 'Live' ? (
                               <>
@@ -520,16 +513,14 @@ export default function AdminPanel() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {businesses.map((biz) => (
-              <div key={biz.id} className={`p-5 rounded-2xl border transition-all space-y-3.5 bg-white shadow-xs ${
-                biz.status === 'Suspended' ? 'border-red-300 bg-red-50/20' : 'border-slate-200'
-              }`}>
+              <div key={biz.id} className={`p-5 rounded-2xl border transition-all space-y-3.5 bg-white shadow-xs ${biz.status === 'Suspended' ? 'border-red-300 bg-red-50/20' : 'border-slate-200'
+                }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className={`w-9 h-9 rounded-xl border flex items-center justify-center font-bold text-sm ${
-                      biz.status === 'Suspended'
+                    <div className={`w-9 h-9 rounded-xl border flex items-center justify-center font-bold text-sm ${biz.status === 'Suspended'
                         ? 'bg-red-100 border-red-200 text-red-700'
                         : 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                    }`}>
+                      }`}>
                       {biz.businessName.substring(0, 2).toUpperCase()}
                     </div>
                     <div>
@@ -537,11 +528,10 @@ export default function AdminPanel() {
                       <p className="text-[11px] text-slate-500">{biz.ownerName}</p>
                     </div>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                    biz.status === 'Suspended'
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${biz.status === 'Suspended'
                       ? 'bg-red-100 text-red-800 border-red-200'
                       : 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                  }`}>
+                    }`}>
                     {biz.status === 'Suspended' ? '⛔ Suspended' : '✓ Active'}
                   </span>
                 </div>
@@ -569,11 +559,10 @@ export default function AdminPanel() {
                   <button
                     type="button"
                     onClick={() => handleToggleAccountSuspension(biz.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
-                      biz.status === 'Suspended'
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${biz.status === 'Suspended'
                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                         : 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200'
-                    }`}
+                      }`}
                   >
                     {biz.status === 'Suspended' ? '✓ Unsuspend & Activate' : '⛔ Suspend Account'}
                   </button>

@@ -88,6 +88,7 @@ export async function sendOtpEmail(email) {
   if (dispatchedViaSupabase) {
     return { 
       success: true,
+      fallback: false,
       message: `6-digit OTP code sent to ${cleanEmail}! Please check your Gmail.`
     }
   } else {
@@ -96,7 +97,9 @@ export async function sendOtpEmail(email) {
     console.log('[AdPilot Security] Verification code generated for', cleanEmail, ':', randomOtp)
     return { 
       success: true,
-      message: `6-digit OTP code sent to ${cleanEmail}! Please check your inbox.`
+      otp: randomOtp,
+      fallback: true,
+      message: `Verification code [${randomOtp}] generated for ${cleanEmail}!`
     }
   }
 }

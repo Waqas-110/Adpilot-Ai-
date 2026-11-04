@@ -110,7 +110,12 @@ export default function AuthModal() {
     try {
       const res = await requestOtp(email)
       setOtpSent(true)
-      setSuccessMsg(`6-digit OTP code sent to ${email}! Please check your email inbox.`)
+      if (res?.fallback && res?.otp) {
+        setOtpToken(res.otp)
+        setSuccessMsg(`Verification Code [${res.otp}] generated for ${email}! Click "Verify" to confirm.`)
+      } else {
+        setSuccessMsg(`6-digit OTP code sent to ${email}! Please check your email inbox.`)
+      }
     } catch (err) {
       setErrorMsg(err.message || 'Could not send OTP code')
     } finally {
