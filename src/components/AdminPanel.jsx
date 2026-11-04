@@ -27,7 +27,8 @@ import {
   Cpu,
   Radio,
   Sliders,
-  Check
+  Check,
+  LogOut
 } from 'lucide-react'
 
 // Mock database of registered Pakistani business owners for Admin overview
@@ -101,7 +102,7 @@ const INITIAL_REGISTERED_BUSINESSES = [
 
 export default function AdminPanel() {
   const { campaigns, toggleCampaignStatus } = useCampaign()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   const [businesses, setBusinesses] = useState(INITIAL_REGISTERED_BUSINESSES)
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(true)
@@ -252,8 +253,16 @@ export default function AdminPanel() {
             <span>Sync APIs</span>
           </button>
           <div className="px-3.5 py-2 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-700 font-mono">
-            Logged: Waqas Anwar (Owner)
+            {user?.email || 'admin@gmail.com'}
           </div>
+          <button
+            onClick={logout}
+            className="px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-xs text-red-700 border border-red-200 flex items-center gap-1.5 transition-all cursor-pointer font-bold"
+            title="Log out of Admin Dashboard"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Logout</span>
+          </button>
         </div>
       </div>
 
