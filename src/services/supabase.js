@@ -110,23 +110,53 @@ export async function verifyOtpToken(email, token) {
   }
 
   if (isSupabaseConfigured && supabase) {
+    // 1. Try verify with type: 'signup' (Token sent during account creation)
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
+      const res = await supabase.auth.verifyOtp({
+        email,
+        token: cleanToken,
+        type: 'signup'
+      })
+      if (!res.error && res.data?.user) {
+        localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
+        return res.data
+      }
+    } catch (err) {
+      console.warn('verifyOtp signup type exception:', err.message)
+    }
+
+    // 2. Try verify with type: 'email' (Token sent via signInWithOtp)
+    try {
+      const res = await supabase.auth.verifyOtp({
         email,
         token: cleanToken,
         type: 'email'
       })
-      if (!error && data?.user) {
-        localStorage.setItem('adpilot_session', JSON.stringify(data.user))
-        return data
+      if (!res.error && res.data?.user) {
+        localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
+        return res.data
       }
-      console.warn('Supabase verifyOtp failed:', error?.message)
     } catch (err) {
-      console.warn('Supabase verifyOtp exception:', err.message)
+      console.warn('verifyOtp email type exception:', err.message)
+    }
+
+    // 3. Try verify with type: 'magiclink'
+    try {
+      const res = await supabase.auth.verifyOtp({
+        email,
+        token: cleanToken,
+        type: 'magiclink'
+      })
+      if (!res.error && res.data?.user) {
+        localStorage.setItem('adpilot_session', JSON.stringify(res.data.user))
+        return res.data
+      }
+    } catch (err) {
+      console.warn('verifyOtp magiclink type exception:', err.message)
     }
   }
 
-  throw new Error('Invalid OTP code. Please enter test code 123456.')
+  throw new Error('Ghalat OTP code! Apne email mein aaya hua 6-digit code enter karein ya 123456 enter karein.')
 }
 
 /**
@@ -242,6 +272,7 @@ export async function signUpWithEmailPassword(email, password, metadata = {}) {
         email: cleanEmail,
         password,
         options: {
+          emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
           data: {
             full_name: metadata.fullName || cleanEmail.split('@')[0],
             business_name: metadata.businessName || 'My Brand PK'
