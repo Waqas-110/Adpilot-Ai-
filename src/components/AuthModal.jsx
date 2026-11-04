@@ -91,7 +91,10 @@ export default function AuthModal() {
     setErrorMsg('')
     try {
       const res = await sendPasswordReset(email)
-      setSuccessMsg(res?.message || 'Password reset link sent to your email!')
+      setSuccessMsg(res?.message || 'Password reset successfully! Logging you in...')
+      setTimeout(() => {
+        setIsAuthModalOpen(false)
+      }, 400)
     } catch (err) {
       setErrorMsg(err.message || 'Could not send reset instructions')
     } finally {
