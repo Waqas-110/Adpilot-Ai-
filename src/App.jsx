@@ -15,11 +15,18 @@ function MainContent() {
   const [isContactOpen, setIsContactOpen] = useState(false)
   const [viewMode, setViewMode] = useState('app') // 'app' | 'landing' | 'admin'
 
-  // Admin status check (Only accessible when logged in with admin credentials e.g. admin@adpilot.ai)
+  // Admin status check (Only accessible when logged in with admin credentials e.g. admin@gmail.com)
   const isAdmin = Boolean(
     user?.email?.toLowerCase().includes('admin') ||
     user?.user_metadata?.role === 'admin'
   )
+
+  // Automatically open Admin Panel when logging in with admin credentials
+  React.useEffect(() => {
+    if (isAdmin) {
+      setViewMode('admin')
+    }
+  }, [isAdmin, user?.email])
 
   // 1. Non-logged-in visitors ALWAYS see Landing Page (No public Admin button)
   if (!user) {

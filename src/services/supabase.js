@@ -119,8 +119,31 @@ export async function verifyOtpToken(email, token) {
  */
 export async function signInWithEmailPassword(email, password) {
   const cleanEmail = email.toLowerCase().trim()
-  const isAdminEmail = cleanEmail.includes('admin')
+  const isAdminEmail = cleanEmail === 'admin@gmail.com' || cleanEmail.includes('admin')
 
+  // 1. Direct Master Admin Verification (Email: admin@gmail.com / Password: 123456)
+  if (isAdminEmail) {
+    const validAdminPasswords = ['123456', 'admin123', 'admin', 'adpilot2026']
+    if (!validAdminPasswords.includes(password.trim())) {
+      throw new Error('Ghalat Admin Password! Admin ke access ke liye password "123456" enter karein.')
+    }
+
+    const adminUser = {
+      id: 'admin_master_waqas',
+      email: cleanEmail === 'admin@gmail.com' ? 'admin@gmail.com' : cleanEmail,
+      user_metadata: {
+        full_name: 'Waqas Anwar (Master Admin)',
+        avatar_url: 'https://api.dicebear.com/7.x/identicon/svg?seed=admin_master',
+        business_name: 'AdPilot Command Center',
+        role: 'admin'
+      },
+      provider: 'password'
+    }
+    localStorage.setItem('adpilot_session', JSON.stringify(adminUser))
+    return { user: adminUser }
+  }
+
+  // 2. Regular User Supabase authentication
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -144,42 +167,34 @@ export async function signInWithEmailPassword(email, password) {
     }
   }
 
-  // Strict local / sandbox credential verification
-  if (isAdminEmail) {
-    const validAdminPasswords = ['123456', 'admin123', 'admin', 'adpilot2026', 'adpilot@2026']
-    if (!validAdminPasswords.includes(password.trim())) {
-      throw new Error('Ghalat Admin Password! Admin password "123456" hai.')
+  // 3. Regular Sandbox User verification
+  const usersDb = JSON.parse(localStorage.getItem('adpilot_users_db') || '{}')
+  if (usersDb[cleanEmail]) {
+    if (usersDb[cleanEmail].password !== password) {
+      throw new Error('Ghalat Password! Aapka daala gaya password match nahi kar raha.')
     }
   } else {
-    // Check against registered users in database / localStorage
-    const usersDb = JSON.parse(localStorage.getItem('adpilot_users_db') || '{}')
-    if (usersDb[cleanEmail]) {
-      if (usersDb[cleanEmail].password !== password) {
-        throw new Error('Ghalat Password! Aapka daala gaya password match nahi kar raha.')
-      }
-    } else {
-      // User must provide at least 6-char password
-      if (!password || password.length < 6) {
-        throw new Error('Ghalat Password! Password kam az kam 6 characters ka hona chahiye.')
-      }
-      // Save newly authenticated test user
-      usersDb[cleanEmail] = {
-        password,
-        fullName: email.split('@')[0],
-        businessName: 'AdPilot Brand'
-      }
-      localStorage.setItem('adpilot_users_db', JSON.stringify(usersDb))
+    // User must provide at least 6-char password
+    if (!password || password.length < 6) {
+      throw new Error('Ghalat Password! Password kam az kam 6 characters ka hona chahiye.')
     }
+    // Save newly authenticated test user
+    usersDb[cleanEmail] = {
+      password,
+      fullName: email.split('@')[0],
+      businessName: 'AdPilot Brand'
+    }
+    localStorage.setItem('adpilot_users_db', JSON.stringify(usersDb))
   }
 
   const mockUser = {
     id: 'user_' + Math.random().toString(36).substring(2, 9),
     email: cleanEmail,
     user_metadata: {
-      full_name: isAdminEmail ? 'AdPilot Master Admin' : cleanEmail.split('@')[0],
+      full_name: cleanEmail.split('@')[0],
       avatar_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${cleanEmail}`,
-      business_name: isAdminEmail ? 'AdPilot Command Center' : 'AdPilot Store PK',
-      role: isAdminEmail ? 'admin' : 'user'
+      business_name: 'AdPilot Store PK',
+      role: 'user'
     },
     provider: 'password'
   }
